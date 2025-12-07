@@ -25,6 +25,7 @@ import logging
 from sqlalchemy.inspection import inspect
 from decimal import Decimal
 from models.log import logger
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -35,16 +36,13 @@ db_instance = DB(activate=True)
 oAuth2_schema = OAuth2PasswordBearer(tokenUrl="login")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-#print("SECRET_KEY", SECRET_KEY, type(SECRET_KEY))
 ALGORITHM = "HS256"
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-router = APIRouter()
 
 def get_access_token(data: dict):
      to_encode = data.copy()
      expire = datetime.utcnow() + timedelta(hours=1)
-     #expire = datetime.now(datetime.timezone.utc) + timedelta(hours=1)
+     #expire = datetime.now(datetime.astimezone.utc) + timedelta(hours=1)
      to_encode.update({"exp": expire})
      return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -67,6 +65,30 @@ def get_current_user(token: str = Depends(oAuth2_schema), db: Session = Depends(
                raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
+from typing import Optional
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from jose import jwt, JWTError
+
+def get_current_user_optional(
+    token: str = Depends(oAuth2_schema),
+    db: Session = Depends(db_instance.get_db)
+) -> Optional[User]:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if not username:
+             logger.error("get_current_user_optional: No username found")
+             return None
+        user = db.query(User).filter(User.username == username).first()
+        return user
+    except JWTError as e:
+         logger.error(f"get_current_user_optional Error: {e}")
+         return None
+
+
 def verify_password(plain_password, hashed_password):
      return pwd_context.verify(plain_password, hashed_password)
 
@@ -86,14 +108,14 @@ def authenticate_user(username: str, password : str, db:Session):
 def require_role(*roles: str):
      def role_dependency(current_user: User = Depends(get_current_user)):
           if current_user.role not in roles:
+               logger.error("require_role: Insufficient Permission")
                raise HTTPException(status_code=403, detail="Insufficient Permission")
           return current_user
      return role_dependency
 
 
 
-#audit_user_id = ContextVar("audit_user_id", default=None)
-#audit_ip = ContextVar("audit_ip", default=None)
+
 
 async def audit_middleware(request: Request, call_next):
      token = None
@@ -129,6 +151,13 @@ async def audit_middleware(request: Request, call_next):
 
 app.middleware("http")(audit_middleware)
 
+app.add_middleware(
+     CORSMiddleware,
+     allow_origins=["*"],   # or ["http://localhost:5173"]
+     allow_credentials=True,
+     allow_methods=["*"],
+     allow_headers=["*"],
+)
 @app.on_event("startup")
 def on_startup():
      logger.info("Application is starting")
@@ -208,20 +237,22 @@ def after_delete(mapper, connection, target):
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = Depends(db_instance.get_db)):
      user = authenticate_user(form_data.username, form_data.password, db)
      if not user:
+          logger.error("login: Invalid Credentials")
           raise HTTPException(status_code=401, detail="Invalid Credentials")
      access_token = get_access_token({"sub": user.username})
      return {
           "access_token" : access_token,
           "token_type" : "bearer"
           }
-     
-@router.post("/logout/")
-async def logout(user: User = Depends(get_current_user)):
-     logger.info(f"logout successfully - user_id: {user.id} : username: {user.username}")
-     return {
-          "message" : "Logged out successfully"
-     }
-     
+#app.include_router(router) 
+@app.post("/logout/")
+async def logout(user: Optional[User] = Depends(get_current_user_optional)):
+    if user:
+        logger.info(f"logout successfully - user_id: {user.id} : username: {user.username}")
+    else:
+        logger.info("logout attempted - no valid user token")
+    return {"message": "Logged out successfully"}
+
      
 @app.post("/sign-up/")
 async def add_user(
@@ -256,14 +287,14 @@ async def add_user(
           raise HTTPException(status_code=500, detail=f"Failed to add {username} to database")
      
      
-@app.get("/get-user/{user_id}")
-async def get_user_by_id(
-     user_id: int,
+@app.get("/get-user/{user_name}")
+async def get_user_by_name(
+     user_name: str,
      current_user: User = Depends(require_role("admin")),
      db: Session  = Depends(db_instance.get_db)
      ):
      try:
-          result = SearchUser(user_id, db).search_user()
+          result = SearchUser(user_name, db).search_user()
           return result
      except RuntimeError as e:
           logger.error(f"{e}")
@@ -303,9 +334,11 @@ async def add_supplier(
           
           return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added {name}"})
      except RuntimeError as e:
+          logger.error(f"add_supplier_endpoint_Error: {e} ")
           raise HTTPException(status_code=500, detail=str(e))
      except Exception as e:
-          print("DB Error: ", e)
+          logger.debug(f"add_supplier_endpoint_DB Error: {e}")
+          #print("DB Error: ", e)
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {name} to database")
 
@@ -337,8 +370,6 @@ async def add_product(
      description: Optional[str] = Form(None),
      unit_price: float =  Form(...),
      selling_price: float = Form(...),
-     reorder_level: int = Form(...),
-     is_active: bool = True,
      current_user: User = Depends(require_role("admin")),
      db: Session = Depends(db_instance.get_db)
 ):
@@ -351,18 +382,16 @@ async def add_product(
                description,
                unit_price,
                selling_price,
-               reorder_level,
-               is_active,
                db).create_product()
           
           
           return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added {name}"})
      except RuntimeError as e:
-          logger.error(f"{e}")
+          logger.error(f"add_product_endpoint: {e}")
           raise HTTPException(status_code=500, detail=str(e))
      except Exception as e:
-          print("DB Error: ", e)
-          logger.debug(f"{e}")
+          #print("DB Error: ", e)
+          logger.debug(f"add_product_endpoint_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {name} to database")
 
@@ -376,11 +405,10 @@ async def get_product_by_barcode(
           result = SearchProduct(barcode, db).search_product()
           return result
      except RuntimeError as e:
-          logger.error(f"{e}")
+          logger.error(f"get_product_by_barcode_endpoint: {e}")
           raise HTTPException(status_code=500, detail=str(e))
      except Exception as e:
-          print("DB Error: ", e)
-          logger.debug(f"{e}")
+          logger.debug(f"get_product_by_barcode_endpoint_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive product")
      
@@ -412,11 +440,10 @@ async def add_stock_batch(
           logger.info(f"Successfully Created Stoch Batch with id {stock.id}")
           return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added {batch_number}"})
      except RuntimeError as e:
-          logger.error(f"{e}") 
+          logger.error(f"add_stock_batch_endpoint: {e}") 
           raise HTTPException(status_code=500, detail=str(e))
      except Exception as e:
-          print("DB Error: ", e)
-          logger.debug(f"{e}")
+          logger.debug(f"add_stock_batch_endpoint_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {batch_number} to database")
 
@@ -443,14 +470,12 @@ async def add_customer(
           ).create_customer()
           return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added {first_name}"})
      except RuntimeError as e:
-          logger.error(f"{e}") 
+          logger.error(f"add_customer_endpoint: {e}") 
           raise HTTPException(status_code=500, detail=str(e))
      except Exception as e:
-          print("DB Error: ", e)
-          logger.debug(f"{e}")
+          logger.debug(f"add_customer_endpoint_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {first_name} to database")
-     
 @app.post("/add-sale/")
 async def add_sale(
      customer_id: int = Form(...),

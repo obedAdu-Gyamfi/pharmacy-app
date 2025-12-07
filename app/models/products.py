@@ -45,16 +45,14 @@ class Product(BASE):
 
 class CreateProduct:
     
-    def __init__(self, name, generic_name, barcode, category, description, unit_price, selling_price, reorder_level, is_active, db):
+    def __init__(self, name, generic_name, barcode, category, description, unit_price, selling_price, db):
         self.name = name
         self.generic_name = generic_name
         self.barcode = barcode
         self.category = category
         self.description = description
         self.unit_price = unit_price
-        self.is_active = is_active
         self.selling_price = selling_price
-        self.reorder_level = reorder_level
         self.db = db   
      
     def __repr__(self):
@@ -73,8 +71,8 @@ class CreateProduct:
             description=self.description,
             unit_price=self.unit_price,
             selling_price=self.selling_price,
-            reorder_level=self.reorder_level,
-            is_active=self.is_active
+            reorder_level=0,
+            is_active=True
           )
         self.db.add(new_product)
         self.db.commit()

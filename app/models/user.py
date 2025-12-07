@@ -69,15 +69,15 @@ class CreateUser:
         
         
 class SearchUser:
-    def __init__(self, user_id, db):
+    def __init__(self, user_name, db):
         self.db = db
-        self.user_id = user_id
+        self.user_name = user_name
         
     def __repr__(self):
-        return f"SearchUser(user_id='{self.user_id}', db='{self.db}')"    
+        return f"SearchUser(user_id='{self.user_name}', db='{self.db}')"    
     
     def search_user(self):
-        user = self.db.query(User).filter(User.id == self.user_id).first()
+        user = self.db.query(User).filter(User.username == self.user_name).first()
         if not user:
             logger.error("SearchUser: user not found")
             raise Exception(status_code=404, detail="user not found")
