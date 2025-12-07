@@ -7,11 +7,11 @@ from pathlib import Path
 
 
 
-base_path = Path(__file__).resolve().parent.parent.parent
+log_dir = "logs"
 
 today = datetime.today()
-
-logfile = f"{base_path}/logs/{today.month:02d}-{today.day:02d}-{today.year }.log"
+os.makedirs(log_dir, exist_ok=True)
+logfile = os.path.join(log_dir, f"{today.month:02d}-{today.day:02d}-{today.year }.log")
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("PHARMACYLOGGER")
