@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/*Hamburger Menu*/
+
+
+.hamburger {
+  cursor: pointer;
+  width: 24px;
+  height: 18px;
+  /* slightly smaller so 3 bars fit nicely */
+  position: relative;
+  display: inline-block;
+}
+
+/* common bar styles */
+.hamburger-top,
+.hamburger-middle,
+.hamburger-bottom {
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: #000;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  transform-origin: center;
+}
+
+/* vertical positions */
+.hamburger-top {
+  top: 0;
+}
+
+.hamburger-middle {
+  top: 8px;
+}
+
+.hamburger-bottom {
+  top: 16px;
+}
+
+/* When the button (parent) has the open class, target child spans */
+.hamburger.open .hamburger-top {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger.open .hamburger-middle {
+  opacity: 0;
+  /* smooth fade */
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+.hamburger.open .hamburger-bottom {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* optional: animate the button itself */
+.hamburger.open {
+  /* combine transforms into one if you need rotation/translation on the button */
+  transform: none;
+}
