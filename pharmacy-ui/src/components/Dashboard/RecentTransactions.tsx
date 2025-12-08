@@ -1,6 +1,33 @@
 import { FiArrowUpRight, FiDollarSign, FiMoreHorizontal } from 'react-icons/fi'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+
+interface Props{
+    cusId: string;
+    date: string;
+    sale: number;
+    sale_id: string;
+    loyalty_points: number;
+}; 
 
 export const RecentTransactions = () => {
+
+  const [sales, setSales] = useState<any[]>([]);
+
+  useEffect(() => {
+     const fetchSales = async () => {
+       try {
+         const res = await axios.get("http://127.0.0.1:8000/recent-sales");
+         setSales(res.data);
+       } catch (err) {
+         console.error("Failed to fetch recent sales:", err);
+       }
+     };
+
+     fetchSales();
+   }, []);
+
   return (
     <div className="col-span-12 p-4 rounded border border-stone-300">
       <div className="mb-4 flex items-center justify-between">
@@ -14,48 +41,16 @@ export const RecentTransactions = () => {
       <table className="w-full table-auto">
         <TableHead />
         <tbody>
-          <TableRow
-            cusId="#12342"
-            date="Jan 21, 2025"
-            sale={1000}
-            sale_id="#12"
-            loyalty_points={7}
-          />
-          <TableRow
-            cusId="#12343"
-            date="Jan 22, 2025"
-            sale={100}
-            sale_id="#234"
-            loyalty_points={1}
-          />
-          <TableRow
-            cusId="#123434343"
-            date="Mar 09, 2025"
-            sale={1000}
-            sale_id="#12"
-            loyalty_points={14}
-          />
-          <TableRow
-            cusId="#12342"
-            date="Jan 21, 2025"
-            sale={1000}
-            sale_id="#12"
-            loyalty_points={7}
-          />
-          <TableRow
-            cusId="#12343"
-            date="Jan 22, 2025"
-            sale={100}
-            sale_id="#234"
-            loyalty_points={2}
-          />
-          <TableRow
-            cusId="#123434343"
-            date="Mar 09, 2025"
-            sale={1000}
-            sale_id="#12"
-            loyalty_points={3}
-          />
+          {sales.map((s, i) => (
+            <TableRow
+              key={i}
+              cusId={s.cusId}
+              date={s.date}
+              sale={s.sale}
+              sale_id={s.sale_id}
+              loyalty_points={s.loyalty_points}
+            />
+          ))}
         </tbody>
       </table>
     </div>
@@ -69,7 +64,7 @@ const TableHead = () =>{
           <th className="text-start p-1.5">Customer ID</th>
           <th className="text-start p-1.5">Date</th>
           <th className="text-start p-1.5">Sale</th>
-          <th className="text-start p-1.5">Price</th>
+          <th className="text-start p-1.5">Sale Id</th>
           <th className="text-start p-1.5">Loyalty Points</th>
           <th className="text-start p-1.5"></th>
         </tr>
@@ -77,13 +72,7 @@ const TableHead = () =>{
     );
 }
 
-interface Props{
-    cusId: string;
-    date: string;
-    sale: number;
-    sale_id: string;
-    loyalty_points: number;
-}; 
+
 const TableRow = ({cusId, date, sale, sale_id, loyalty_points}: Props) => {
 
 

@@ -1,4 +1,6 @@
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Props {
   title: string;
@@ -7,24 +9,48 @@ interface Props {
   trend: "up" | "down";
   period: string;
 }
+interface StarCardsProps{
+  selectedPeriod: string;
+}
 
-export const StartCards = () => {
+export const StartCards = ({selectedPeriod}: StarCardsProps) => {
+  //const [selectedPeriod, setSelectedPeriod] = useState("last one week");
+  const [salesData, setSalesData] = useState<any>(null);
+
+
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const res = await axios.get(
+          `http://127.0.0.1:8000/get-sale-period/${selectedPeriod}`
+         );
+        setSalesData(res.data);
+       } catch (err) {
+        console.error("Failed to fetch sale:", err);
+       }
+     };
+
+    fetchSales();
+   }, [selectedPeriod]);
+
   return (
     <>
       <Card
         title="Gross Revenue"
-        value="₵120,054.24"
+        value={`₵${salesData?.total_revenue || 0}`}
         pillText="2.75%"
         trend="up"
-        period="From Jan 1st - Jul 31st"
+        period={selectedPeriod}
       />
+
       <Card
         title="Avg Sale"
-        value="₵27.97"
+        value={`₵${salesData?.average_sale || 0}`}
         pillText="1.01%"
         trend="down"
-        period="From Jan 1st - Jul 31st"
+        period={selectedPeriod}
       />
+
       <Card
         title="Trailing Year"
         value="₵278,054.24"
