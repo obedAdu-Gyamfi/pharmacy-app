@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Index, Integer, ForeignKey, String, Date, DECIMAL,text, TIMESTAMP, Text, Enum
+from sqlalchemy import Column, Index, Integer, ForeignKey, String, Date, DECIMAL,text, TIMESTAMP, Text, Enum, cast, func
 from sqlalchemy.orm import relationship
 from .base import BASE
 from .user import User
@@ -7,6 +7,7 @@ from .customers import Customer
 import datetime
 from decimal import Decimal
 from .log import logger
+from datetime import date, timedelta
 
 
 class Sale(BASE):
@@ -39,8 +40,8 @@ class CreateSale:
         self.customer_id = customer_id
         self.subtotal = 0
         self.discount = 0
-        self.tax = 0 #(float(self.subtotal) * 15 ) / 100
-        self.total = 0 # float(self.subtotal) + float(self.discount) + self.tax
+        self.tax = 0 
+        self.total = 0 
         self.payment_method = payment_method
         self.payment_status = payment_status
         self.notes = notes
@@ -154,8 +155,8 @@ class CreateSaleItem:
             )
             self.db.add(new_sale_item)
             sale_items.append(new_sale_item)
+            product.is_active = False
         self.db.commit()
-        #self.db.refresh(new_sale_item)
         
         new_sale = self.db.query(Sale).filter(Sale.id == self.sale_id).first()
         new_sale.subtotal = sum(item.total for item in sale_items)
@@ -163,15 +164,83 @@ class CreateSaleItem:
         new_sale.total = new_sale.subtotal + new_sale.tax
         
         self.db.commit()
-    """
-    def get_sale_item(self):
-        query = self.db.query(User.id, Product.id, SalesItem.id)
-        query = query.join(User).join(Product).join(SalesItem)    
-        result = query.filter(User.username).all()
-        return (result)
+class GetSales:
+    def __init__(self, period, db):
+        self.period = period
+        self.db = db
+        
+    def __repr__(self):
+        return f"GetSales(period={self.period}, db={self.db})"
+        
+    def get_sales(self):
+
+        start_date = date.today() - timedelta(days=self.period)
+        end_date = date.today()
+        search = (
+            self.db.query(Sale)
+            .filter(Sale.sale_date >= start_date)
+            .filter(Sale.sale_date < end_date + timedelta(days=1))
+            .all()
+        )
+
+        if search:
+            total_revenue = sum(item.total for item in search)
+            average_sale = total_revenue / len(search)
+            
+        if not search:
+            logger.info("sales search was unsuccessful")
+            return {
+                "total_revenue": 0,
+                "average_sale": 0
+            }
     
-    """
-class PurchaseOrder(BASE):
+        return {
+            "total_revenue": total_revenue,
+            "average_sale": average_sale
+        }
+class RecentTransaction:
+    
+    def __init__(self, db):
+        self.db = db
+        
+    def __repr__(self):
+        return f"RecentTransaction(db='{self.db}')"
+    def get_recent_transaction(self):
+        recent_sales = (
+        self.db.query(Sale, Customer).join(Customer, Sale.customer_id == Customer.id).order_by(Sale.sale_date.desc()).limit(10).all()
+)
+
+
+        return  [
+        {
+            "cusId": c.id,
+            "date": s.sale_date.strftime("%b %d, %Y"),
+            "sale": s.total,
+            "sale_id": f"#{s.id}",
+            "loyalty_points": c.loyalty_points
+        }
+        for s, c in recent_sales
+        ]
+                            
+ 
+    def activity(self):
+        results = (
+        self.db.query(
+            func.date_format(Sale.sale_date, "%b").label("month"),
+            func.count(Sale.id).label("transactions"),
+            func.sum(Sale.total).label("total_sales")
+        )
+        .group_by("month")
+        .all()
+        )
+
+        return [
+        {"name": r.month, "No. Sales": r.transactions, "Sales": r.total_sales} for r in results
+        ]
+ 
+ 
+ 
+class PurchaseOrder(BASE):  
     __tablename__ = "purchase_orders"
     id = Column(Integer, primary_key=True, autoincrement=True)
     po_number = Column(String(50), unique=True, nullable=False)
@@ -183,14 +252,11 @@ class PurchaseOrder(BASE):
     total_amount = Column(DECIMAL(10, 2))
     notes = Column(Text)
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    
     user = relationship("User", back_populates="purchase_orders")
     supplier = relationship("Supplier", back_populates="purchase_orders")
     items = relationship("PurchaseOrderItem", back_populates="po", cascade="all, delete")
 
-#class CreatePurchaseOrder:
-    
-#    def __init__(self, po_number, supplier_id, user_id, ):
+
         
     
 class PurchaseOrderItem(BASE):

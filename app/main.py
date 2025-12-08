@@ -4,7 +4,7 @@ from models.database import DB
 from models.user import SearchUser, CreateUser, User, DeleteUser
 from models.suppliers import CreateSupplier, SearchSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch
-from models.sales import CreateSaleItem, CreateSale
+from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction
 from models.customers import CreateCustomer
 from models.config import WriteAuditLogs, AuditLog
 from models.base import BASE, audit_user_id, audit_ip
@@ -537,6 +537,78 @@ async def add_sale_item(
           logger.debug(f"{e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {sale_items.sale_id} to database")
+     
+@app.get("/get-sale-period/{sales_period}")
+async def get_sale_period(
+     sales_period: str,
+     db: Session = Depends(db_instance.get_db),
+     #current_user: User = Depends(require_role("admin"))
+     ):
+
+     SALE_PERIOD = {
+          "last one week": 7,
+          "last one month": 30,
+          "last  three months": 90,
+          "last six months": 180,
+          "last one year": 360
+
+     }
+     if sales_period not in SALE_PERIOD:
+          logger.error("Invalid sales period")
+          raise HTTPException(
+            status_code=400,
+            detail=f"Invalid sales period. Allowed: {list(SALE_PERIOD.keys())}"
+        )
+     days = SALE_PERIOD[sales_period]
+     try:
+          period = GetSales(
+               days,
+               db
+          ).get_sales()
+          return period
+     
+     except RuntimeError as e:
+          logger.error(f"get_sales_period: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"get_sales_period_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Failed to retreive sales period")
+     
+
+
+
+@app.get("/recent-sales")
+def recent_sales(db: Session = Depends(db_instance.get_db)):
+     try:
+          result = RecentTransaction(db).get_recent_transaction()
+          return result
+     except RuntimeError as e:
+          logger.error(f"get_transaction: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"get_sales_period_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Failed to retreive transaction")
+     
+
+@app.get("/recent-activity")
+def recent_activity(db: Session = Depends(db_instance.get_db)):
+     try:
+          result = RecentTransaction(db).activity()
+          return result
+     except RuntimeError as e:
+          logger.error(f"get_transaction: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"get_sales_period_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Failed to retreive transaction")
+
+
+
+
+
 
 
 @app.post("/delete-user/")
