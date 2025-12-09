@@ -18,7 +18,7 @@ export const Plan = () => {
       console.error(err);
     } finally {
       localStorage.removeItem("token");
-      window.location.href = "/";
+      window.location.href = "/login";
     }
   };
 

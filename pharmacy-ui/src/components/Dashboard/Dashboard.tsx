@@ -13,14 +13,16 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg pb-4 shadow h-[200vh]">
-      <TopBar
-      selectedPeriod={selectedPeriod}
-      setSelectedPeriod={setSelectedPeriod}
-      periods={periods}
-      />
-      <Grid selectedPeriod={selectedPeriod} />
-    </div>
+    <>
+      <div className="bg-white rounded-lg pb-4 shadow h-[150vh]">
+        <TopBar
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+          periods={periods}
+        />
+        <Grid selectedPeriod={selectedPeriod} />
+      </div>
+    </>
   );
 };
 export default Dashboard;
