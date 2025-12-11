@@ -11,7 +11,7 @@ class User(BASE):
     username = Column(String(50), unique=True, nullable=False)
     hash_password = Column(String(255), unique=True, nullable=False)
     fullname = Column(String(100), nullable=False)
-    role = Column(Enum('admin', 'cashier', 'pharmacist', 'other', name="user_roles"), nullable=False)
+    role = Column(Enum('admin', 'cashier', 'pharmacist', 'manager','other', name="user_roles"), nullable=False)
     email = Column(String(100), unique=True, nullable=True)
     phone = Column(String(20), unique=True,nullable=True)
     logged_in = Column(Boolean, default=True)

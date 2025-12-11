@@ -52,6 +52,7 @@ class CreateCustomer:
         )
         if not new_customer:
             logger.error(f"create_customer: Failed to create new customer {self.first_name}")
+        logger.info("create_customer: Added a new customer successfullly")
         self.db.add(new_customer)
         self.db.commit()
         self.db.refresh(new_customer)

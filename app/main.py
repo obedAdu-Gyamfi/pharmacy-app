@@ -496,7 +496,7 @@ async def add_sale(
                db,
                current_user.id
           ).create_sale()   
-          return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added {sale.id}"})
+          return JSONResponse(status_code=200, content={"status" :"success", "message": f"{sale.id}"})
      
      except RuntimeError as e:
           logger.error(f"{e}")
@@ -528,7 +528,7 @@ async def add_sale_item(
                db
           ).create_sale_item()
           
-          return JSONResponse(status_code=200, content={"status" :"success", "message": f"successfully added sale id {sale_items.sale_id}"})
+          return JSONResponse(status_code=200, content={"status" :"success", "message": f"{sale_items.sale_id}"})
      except RuntimeError as e:
           logger.error(f"{e}") 
           raise HTTPException(status_code=500, detail=str(e))
@@ -548,7 +548,7 @@ async def get_sale_period(
      SALE_PERIOD = {
           "last one week": 7,
           "last one month": 30,
-          "last  three months": 90,
+          "last three months": 90,
           "last six months": 180,
           "last one year": 360
 

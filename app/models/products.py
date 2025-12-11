@@ -108,7 +108,9 @@ class SearchProduct:
                    "product_id": product.id, 
                    "name": product.name,
                    "supplier": supplier_name,
+                   "Unit Price": product.unit_price,
                    "expiry_date": expiry_date,
+                   **{"batch_id" : batch.id},
                    "reorder_level": product.reorder_level,
                    "description": product.description
                }

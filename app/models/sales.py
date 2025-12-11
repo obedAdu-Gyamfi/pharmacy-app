@@ -162,8 +162,10 @@ class CreateSaleItem:
         new_sale.subtotal = sum(item.total for item in sale_items)
         new_sale.tax = new_sale.subtotal * Decimal("0.15")
         new_sale.total = new_sale.subtotal + new_sale.tax
-        
         self.db.commit()
+        
+        
+
 class GetSales:
     def __init__(self, period, db):
         self.period = period
@@ -184,8 +186,8 @@ class GetSales:
         )
 
         if search:
-            total_revenue = sum(item.total for item in search)
-            average_sale = total_revenue / len(search)
+            total_revenue = round(sum(item.total for item in search), 2)
+            average_sale = f"{total_revenue / len(search):.2f}"
             
         if not search:
             logger.info("sales search was unsuccessful")
@@ -207,7 +209,7 @@ class RecentTransaction:
         return f"RecentTransaction(db='{self.db}')"
     def get_recent_transaction(self):
         recent_sales = (
-        self.db.query(Sale, Customer).join(Customer, Sale.customer_id == Customer.id).order_by(Sale.sale_date.desc()).limit(10).all()
+        self.db.query(Sale, Customer).join(Customer, Sale.customer_id == Customer.id).order_by(Sale.sale_date.desc()).limit(15).all()
 )
 
 
