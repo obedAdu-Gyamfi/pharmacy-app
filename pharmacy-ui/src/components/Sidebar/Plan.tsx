@@ -4,7 +4,6 @@ import axios from "axios";
  
 export const Plan = () => {
   const handleLogout = async () => {
-    // Add your logout logic here
     try {
       const token = localStorage.getItem("token");
       await axios.post(
@@ -36,7 +35,7 @@ export const Plan = () => {
         <button 
           onClick={handleLogout}
           className="px-2 py-1.5 font-medium text-white bg-stone-600 rounded-full baseline hover:bg-darkGreyishBlue transition-colors"
-        >
+          >
           Sign Out
         </button>
       </div>

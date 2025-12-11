@@ -42,8 +42,8 @@ const routes = [
     title: "Sales",
     Icon: FcSalesPerformance,
     children: [
-      { title: "Sales Dashboard", path: "/sales" },
-      { title: "POS", path: "/sales/pos" },
+      { title: "Sales Dashboard", path: "/sales/dashboard" },
+      { title: "POS", path: "/sales" },
     ],
   },
 
