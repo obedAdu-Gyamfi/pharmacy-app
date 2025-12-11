@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "./auth";
 import { Link } from "react-router-dom";
+import { startTokenWatcher } from "./StartTokenWatcher";
 
 
 const Login = () => {
@@ -15,6 +16,7 @@ const Login = () => {
       const result = await login(username, password);
       localStorage.setItem("token", result.access_token);
       navigate("/dashboard");
+      startTokenWatcher();
     } catch (err) {
       alert("Invalid credentials");
     }
