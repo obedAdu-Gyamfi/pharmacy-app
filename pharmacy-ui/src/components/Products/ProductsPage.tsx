@@ -1,11 +1,15 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
+import { SalesTopBar } from '../Sales/SalesTopBar'
 
 export const ProductsPage = () => {
   return (
-    <>
-    <h1> Welcome to the Product Page</h1>
-      <Outlet />
-    </>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <SalesTopBar />
+
+      <main className="flex-1 p-4">
+        <Outlet /> {/* CreateProduct will render here */}
+      </main>
+    </div>
   );
 }
