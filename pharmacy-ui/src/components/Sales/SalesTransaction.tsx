@@ -57,7 +57,6 @@ export const SalesTransaction = ({
         batch_ids: saleItems.map((s) => s.batch_id),
         quantities: saleItems.map((s) => Number(s.quantity)), // ensure numbers
       };
-      console.log("PAULOAD", payload);
       const res = await api.post("/add-sale-item/", payload);
       alert("New Sale Completed Successfully");
     } catch (err) {
@@ -69,9 +68,6 @@ export const SalesTransaction = ({
     <div className="col-span-12 p-4 rounded border border-stone-300">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="flex items-center gap-1.5 font-medium">Sale Items</h3>
-        <button className="text-sm text-violet-500 hover:undeline">
-          see all
-        </button>
       </div>
       <table className="w-full table-auto">
         <TableHead />
@@ -92,7 +88,13 @@ export const SalesTransaction = ({
         <button
           type="submit"
           onClick={handleSubmit}
-          className="px-2 py-1.5 font-medium text-white bg-stone-600 rounded-full baseline hover:bg-darkGreyishBlue transition-colors"
+          disabled={saleItems.length === 0}
+          className={`px-2 py-1.5 font-medium text-white rounded-full transition-colors
+    ${
+      saleItems.length === 0
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-stone-600 hover:bg-darkGreyishBlue"
+    }`}
         >
           CheckOut
         </button>

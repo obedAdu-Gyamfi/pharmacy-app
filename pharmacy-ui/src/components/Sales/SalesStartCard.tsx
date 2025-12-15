@@ -31,8 +31,6 @@ export const SalesStartCard = () => {
   return (
     <>
       <div className="space-y-5">
-        <SalesTopBar />
-
         <div className="grid grid-cols-[2fr_1fr] gap-6">
           <div className="space-y-4">
             <Sales
@@ -146,7 +144,6 @@ const Sales = ({
       if (res.data.status === "success") {
         const newSaleId = res.data.message
         setSaleId(newSaleId);
-        console.log("new sale id", newSaleId);
         alert("New Sale Created Successfully");
 
 
@@ -275,7 +272,6 @@ const SalesItem: React.FC<IProps> = ({
       try {
         const res = await api.get(`/get-product/${barcode}`);
         const productData = res.data.data;
-        console.log("Product fetched: ", productData);
         setBatchID(productData.batch_id?.toString() || "");
         setUnitPrice(productData["Unit Price"]?.toString() || "");
         setProductName(productData.name?.toString() || "");
@@ -306,7 +302,6 @@ const SalesItem: React.FC<IProps> = ({
 
     setSaleItems([...saleItems, newItem]);
 
-    // reset fields
     setProductName("");
     setBarcode("");
     setQuantity("");
