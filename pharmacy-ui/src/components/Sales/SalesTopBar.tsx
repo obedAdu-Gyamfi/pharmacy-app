@@ -12,7 +12,7 @@ export const SalesTopBar = () => {
     month: "short",
     day: "numeric",
     year: "numeric",
-  })
+  });
   return (
     <div className="border-b px-4 mb-4 mt-2 pb-4 border-stone-200">
       <div className="flex items-center justify-between">
