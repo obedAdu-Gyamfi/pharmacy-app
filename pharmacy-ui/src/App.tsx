@@ -10,6 +10,9 @@ import { startTokenWatcher } from "./components/Login/StartTokenWatcher";
 import { useEffect } from "react";
 import { ProductsPage } from "./components/Products/ProductsPage";
 import { CreateProduct } from "./components/Products/CreateProduct";
+import { SupplierPage } from "./components/Suppliers/SupplierPage";
+import { CreateSupplier } from "./components/Suppliers/CreateSupplier";
+import { SalesPage } from "./components/Sales/SalesPage";
 
 const App = () => {
 
@@ -23,14 +26,12 @@ const App = () => {
       path: "/login",
       element: <Login />,
     },
-
-    // PROTECTED ROUTES (all under Sidebar)
     {
       path: "/",
-      element: <DashboardPage />, // Sidebar layout
+      element: <DashboardPage />,
       children: [
         {
-          index: true, // default route -> Dashboard
+          index: true, 
           element: <Dashboard />,
         },
         {
@@ -40,23 +41,45 @@ const App = () => {
         {
           path: "users",
           element: <Users />,
+          children: [
+            {
+              path: "create-user",
+              element: <CreateUser />,
+            },
+          ],
         },
-        {
-          path: "users/create-user",
-          element: <CreateUser />,
-        },
+
         {
           path: "products",
           element: <ProductsPage />,
-        },
-        {
-          path: "products/add",
-          element: <CreateProduct />,
+          children: [
+            {
+              path: "add",
+              element: <CreateProduct />,
+            },
+          ],
         },
         {
           path: "sales",
-          element: <POS />,
+          element: <SalesPage />,
+          children:[
+            {
+              path: "pos",
+              element: <POS />
+            }
+          ]
         },
+      {
+        path: "suppliers",
+        element: <SupplierPage />,
+        children:[
+          {
+            path: "add",
+            element: <CreateSupplier />
+          },
+        ]
+
+      },
       ],
     },
   ]);
