@@ -56,7 +56,7 @@ class CreateSale:
 
     def create_sale(self):
         customer = self.db.query(Customer).filter(Customer.id == self.customer_id ).first()
-        customer.loyalty_points += (10) / 100
+        customer.loyalty_points += 1
         
         new_sale = Sale(
             sale_number = self.sale_number,
