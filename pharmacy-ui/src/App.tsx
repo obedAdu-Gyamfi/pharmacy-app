@@ -8,6 +8,8 @@ import { CreateUser } from "./components/Users/CreateUser";
 import { POS } from "./components/Sales/POS";
 import { startTokenWatcher } from "./components/Login/StartTokenWatcher";
 import { useEffect } from "react";
+import { ProductsPage } from "./components/Products/ProductsPage";
+import { CreateProduct } from "./components/Products/CreateProduct";
 
 const App = () => {
 
@@ -43,11 +45,19 @@ const App = () => {
           path: "users/create-user",
           element: <CreateUser />,
         },
+        {
+          path: "products",
+          element: <ProductsPage />,
+        },
+        {
+          path: "products/add",
+          element: <CreateProduct />,
+        },
+        {
+          path: "sales",
+          element: <POS />,
+        },
       ],
-    },
-    {
-      path: "sales",
-      element: <POS />,
     },
   ]);
   return (
