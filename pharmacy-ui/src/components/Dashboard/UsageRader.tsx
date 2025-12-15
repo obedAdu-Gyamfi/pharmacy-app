@@ -45,7 +45,7 @@ const data = [
     B: 85,
     fullMark: 150,
   },
-];
+];  
 
 
 
