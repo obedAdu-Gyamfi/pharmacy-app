@@ -10,37 +10,37 @@ import {
 
 const data = [
   {
-    subject: "Math",
+    subject: "Total Sales Revenue",
     A: 120,
     B: 110,
     fullMark: 150,
   },
   {
-    subject: "Chinese",
+    subject: "OTC Sales", /*Over-the-counter product sales count or revenue*/
     A: 98,
     B: 130,
     fullMark: 150,
   },
   {
-    subject: "English",
+    subject: "ATV", /*Average Transaction Value - Mean Spending by customer*/
     A: 86,
     B: 130,
     fullMark: 150,
   },
   {
-    subject: "Geography",
+    subject: "Prescription Volume", /* Number of prescription medication sold */
     A: 99,
     B: 100,
     fullMark: 150,
   },
   {
-    subject: "Physics",
+    subject: "ITR", /* Inventory Turnover Rate*/
     A: 85,
     B: 90,
     fullMark: 150,
   },
   {
-    subject: "History",
+    subject: "CRR", /**Customer Return Rate*/
     A: 65,
     B: 85,
     fullMark: 150,

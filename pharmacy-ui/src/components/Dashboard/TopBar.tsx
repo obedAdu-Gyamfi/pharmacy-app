@@ -10,16 +10,24 @@ export const TopBar = ({selectedPeriod, setSelectedPeriod, periods}: Props) => {
 
   const user = UserInformation()
   if (!user) return <div>Loading User info...</div>
-  console.log(user);
+  const today = new Date();
+
+  const formattedDate = today.toLocaleDateString("en-US",{
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+
   return (
     <div className="border-b px-4 mb-4 mt-2 pb-4 border-stone-200">
       <div className="flex items-center justify-between">
         <div>
           <span className="text-sm font-bold block">
-            Welcome, {user.username}
+            Welcome, {user.fullname}
           </span>
           <span className="text-xs block text-stone-500">
-            Tuesday, Aug 8th 2023
+            {formattedDate}
           </span>
         </div>
         <div>
