@@ -1,4 +1,3 @@
-
 import Login from "./components/Login/Login";
 import DashboardPage from "./components/Dashboard/DashboardPage";
 import Dashboard from "./components/Dashboard/Dashboard";
@@ -13,9 +12,9 @@ import { CreateProduct } from "./components/Products/CreateProduct";
 import { SupplierPage } from "./components/Suppliers/SupplierPage";
 import { CreateSupplier } from "./components/Suppliers/CreateSupplier";
 import { SalesPage } from "./components/Sales/SalesPage";
+import { Suppliers } from "./components/Suppliers/Suppliers";
 
 const App = () => {
-
   useEffect(() => {
     startTokenWatcher();
   }, []);
@@ -31,7 +30,7 @@ const App = () => {
       element: <DashboardPage />,
       children: [
         {
-          index: true, 
+          index: true,
           element: <Dashboard />,
         },
         {
@@ -62,32 +61,32 @@ const App = () => {
         {
           path: "sales",
           element: <SalesPage />,
-          children:[
+          children: [
             {
               path: "pos",
-              element: <POS />
-            }
-          ]
+              element: <POS />,
+            },
+          ],
         },
-      {
-        path: "suppliers",
-        element: <SupplierPage />,
-        children:[
-          {
-            path: "add",
-            element: <CreateSupplier />
-          },
-        ]
+        {
+          path: "suppliers",
+          element: <SupplierPage />,
+          children: [
+            {
+              path: "search",
+              element: <Suppliers />
+            }, 
+            {
+              path: "add",
+              element: <CreateSupplier />,
+            },
 
-      },
+          ],
+        },
       ],
     },
   ]);
-  return (
-
-   <RouterProvider router={router} />
-  )
-  
+  return <RouterProvider router={router} />;
 };
 
 export default App;
