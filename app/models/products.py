@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Index, Integer, ForeignKey, String, Date, DECIMAL,text, TIMESTAMP, Text, Boolean
+from sqlalchemy import Column, Index, Integer, ForeignKey, String, Date, DECIMAL,text, TIMESTAMP, Text, Boolean, or_
 from sqlalchemy.orm import relationship, declarative_base
 from .base import BASE
 from .suppliers import Supplier
@@ -24,7 +24,8 @@ class Product(BASE):
     updated_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
     __table_args__ = (
      Index("idx_barcode","barcode"),
-     Index("idx_name","name")
+     Index("idx_name","name"),
+     Index("idx_generic_name", "generic_name"),
     )
     
     stock_batches = relationship("StockBatch", back_populates="product")
@@ -114,6 +115,53 @@ class SearchProduct:
                    "reorder_level": product.reorder_level,
                    "description": product.description
                }
+          }
+        
+        
+        
+
+class GenericProductSearch:
+    def __init__(self, query, db):
+        self.db = db
+        self.query = query.strip()
+    def __repr__(self):
+        return f"GenericProductSearch(query='{self.query}', db='{self.db}')"
+    
+    def lookup_product(self):
+        
+        if not self.query:
+            raise HTTPException(status_code=400, detail="Search term is required!")
+        products = (self.db.query(Product).outerjoin(StockBatch).outerjoin(Supplier).filter(
+            or_(
+                Product.name.ilike(f"{self.query}%"),
+                Product.generic_name.ilike(f"%{self.query}%"),
+                Product.barcode == self.query
+                )).limit(20).all())
+
+        if not products:
+            logger.info("Search_Product: product not found.")
+            raise HTTPException(status_code=404, detail="product not found")
+        data = []
+        for product in products:
+            batch = (min(product.stock_batches, key=lambda b: b.expiry_date) if product.stock_batches else None)
+            
+            data.append({
+                   "product_id": product.id, 
+                   "name": product.name,
+                   "supplier": batch.supplier.name if batch and batch.supplier else None,
+                   "Unit Price": product.unit_price,
+                   "expiry_date": batch.expiry_date if batch else None,
+                   "batch_id" : batch.id if batch else None,
+                   "reorder_level": product.reorder_level,
+                   "description": product.description
+               })
+        #batch = products.stock_batches[0] if products.stock_batches else None
+        #supplier_name = batch.supplier.name if batch and batch.supplier.name else None
+        #expiry_date = batch.expiry_date if batch else None
+        return {
+               "status": "success",
+               "count": len(data),
+               "data" : data
           }
     
 class StockBatch(BASE):

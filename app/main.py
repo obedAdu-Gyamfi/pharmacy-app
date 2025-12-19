@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Form,HTTPException, Depends, Request, APIRouter
 from fastapi.responses import Response
 from models.database import DB
-from models.user import SearchUser, CreateUser, User, DeleteUser
+from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch
 from models.suppliers import CreateSupplier, SearchSupplier
-from models.products import CreateProduct, SearchProduct, CreateStochBatch
+from models.products import CreateProduct, SearchProduct, CreateStochBatch, GenericProductSearch
 from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO
 from models.customers import CreateCustomer
 from models.config import WriteAuditLogs, AuditLog
@@ -304,7 +304,30 @@ async def get_user_by_name(
           logger.debug(f"{e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive user")
-     
+
+
+
+@app.get("/search-user/")
+async def search_user(
+     username: str,
+     db: Session = Depends(db_instance.get_db)
+):
+     try:
+          result = UserSearch(
+               username,
+               db
+          ).lookup_user()
+          return result
+     except RuntimeError as e:
+          logger.error(f"{e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          print("DB Error: ", e)
+          logger.debug(f"{e}")
+          db.rollback()
+          raise HTTPException(status_code=404, detail=f"Failed to retreive user")
+          
+
 @app.put("/update-user/{user_id}")
 async def update_user_info(user_id, db: Session = Depends(db_instance.get_db)):
      pass
@@ -412,6 +435,24 @@ async def get_product_by_barcode(
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive product")
      
+@app.get("/search-product/")
+async def search_product(
+     name: str,
+     db: Session = Depends(db_instance.get_db)   
+):
+     try:
+          result = GenericProductSearch(
+               name,
+               db
+          ).lookup_product()
+          return result
+     except RuntimeError as e:
+          logger.error(f"search product: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"search product_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Product: {name} not found!")
      
 @app.post("/add-stock-batch/")
 async def add_stock_batch(
@@ -631,12 +672,6 @@ def add_po(
           logger.debug(f"Purchasing Order_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to create PO")
-
-     
-          
-
-
-
 
 
 @app.post("/delete-user/")

@@ -1,15 +1,16 @@
 from sqlalchemy.orm  import declarative_base, relationship, sessionmaker
-from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text, Enum
+from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text, Enum, Index, or_
 from .base import BASE
 from passlib.context import CryptContext
 from .log import logger
+from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class User(BASE):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
-    hash_password = Column(String(255), unique=True, nullable=False)
+    hash_password = Column(String(255), unique=False, nullable=False)
     fullname = Column(String(100), nullable=False)
     role = Column(Enum('admin', 'cashier', 'pharmacist', 'manager','other', name="user_roles"), nullable=False)
     email = Column(String(100), unique=True, nullable=True)
@@ -19,15 +20,23 @@ class User(BASE):
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
     
+    __table_args__ = (
+     Index("idx_users_username","username"),
+     Index("idx_fullname","fullname"),
+     Index("idx_users_email", "email"),
+     Index("idx_users_phone", "phone"),
+
+    )
+    
     sales = relationship("Sale", back_populates="user")
     purchase_orders = relationship("PurchaseOrder", back_populates="user")
     audit_logs = relationship("AuditLog", back_populates="user")
 
     def __str__(self):
-        return f"{self.id} {self.username} {self.password_hash} {self.fullname} {self.role} {self.email} {self.phone} {self.is_active} {self.created_at} {self.updated_at}"
+        return f"{self.id} {self.username} {self.hash_password} {self.fullname} {self.role} {self.email} {self.phone} {self.is_active} {self.created_at} {self.updated_at}"
     
     def __repr__(self):
-        return f"User(id='{self.id}', username='{self.username}', password_hash='{self.password_hash}', fullname='{self.fullname}', \
+        return f"User(id='{self.id}', username='{self.username}', password_hash='{self.hash_password}', fullname='{self.fullname}', \
             role='{self.role}', email='{self.email}', phone='{self.phone}', is_active='{self.is_active}', created_at='{self.created_at}', updated_at='{self.updated_at}')"
     
 class CreateUser:
@@ -44,7 +53,7 @@ class CreateUser:
         self.db = db
      
     def __repr__(self):
-        return f"CreateUser(username='{self.username}', password_hash='{self.password_hash}', fullname='{self.fullname}', role='{self.role}' \
+        return f"CreateUser(username='{self.username}', password_hash='{self.hash_password}', fullname='{self.fullname}', role='{self.role}' \
             email='{self.email}', phone='{self.phone}', is_active='{self.is_active}'"
             
     def create_user(self):
@@ -74,7 +83,7 @@ class SearchUser:
         self.user_name = user_name
         
     def __repr__(self):
-        return f"SearchUser(user_id='{self.user_name}', db='{self.db}')"    
+        return f"SearchUser(user_name='{self.user_name}', db='{self.db}')"    
     
     def search_user(self):
         user = self.db.query(User).filter(User.username == self.user_name).first()
@@ -92,6 +101,39 @@ class SearchUser:
                "email": user.email,
                "role": user.role
                }
+          }
+        
+class UserSearch:
+    def __init__(self, username, db):
+        self.db = db
+        self.username = username.strip()
+        
+    def __repr__(self):
+        return f"UserSearch(username='{self.username}', db='{self.db}')"    
+    
+    def lookup_user(self):
+        if not self.username:
+            raise HTTPException(status_code=400, detail="Search term is required")
+        users = self.db.query(User).filter(
+            or_(
+                User.username.ilike(f"{self.username}%"),
+                User.fullname.ilike(f"%{self.username}%")
+            )).limit(20).all()
+        if not users:
+            logger.info(f"UserSearch:no users found for'{self.username}'")
+
+        return {
+               "status": "success",
+               "count": len(users),
+               "data" : [{
+                "id": user.id,
+               "username": user.username,
+               "fullname": user.fullname,
+               "email": user.email,
+               "role": user.role
+               }
+                for user in users
+                ]
           }
         
 class DeleteUser:
