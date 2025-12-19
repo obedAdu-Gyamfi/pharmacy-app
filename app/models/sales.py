@@ -285,6 +285,9 @@ class CreatePO:
         )
         self.db.add(new_po)
         self.db.commit()
+        return {
+            "status": "success"
+        }
         
         
     
@@ -299,5 +302,21 @@ class PurchaseOrderItem(BASE):
     po = relationship("PurchaseOrder", back_populates="items")
     product = relationship("Product", back_populates="purchase_order_items")
     
-
     
+class CreatePOItem:
+    
+    def __init__(self, po_id, product_id, quantity, unit_price, total, db):
+        
+        self.po_id = po_id
+        self.product_id = product_id
+        self.quantity = quantity
+        self.unit_price = unit_price
+        self.total = total
+        self.db = db
+        
+    def __repr__(self):
+        return f"CreatePOItem(po_id='{self.po_id}', product_id='{self.product_id}', quantity='{self.quantity}', unit_price='{self.unit_price}', total='{self.total}', db='{self.db}')"
+    
+
+    def create_po_item(self):
+        pass

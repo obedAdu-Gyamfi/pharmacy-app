@@ -615,7 +615,7 @@ def add_po(
      current_user = Depends(require_role("admin")), 
      db:Session = Depends(db_instance.get_db)):
      try:
-          CreatePO(
+          result = CreatePO(
                supplier_id,
                expt_date,
                status,
