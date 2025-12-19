@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, text, Text, Boolean
+from sqlalchemy import Column, Integer, String, TIMESTAMP, text, Text, Boolean, or_, Index
 from sqlalchemy.orm import relationship, declarative_base
 from .base import BASE
 from .log import logger
+from fastapi import HTTPException
 
 class Supplier(BASE):
     __tablename__ = "suppliers"
@@ -15,7 +16,10 @@ class Supplier(BASE):
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
     
-    
+    __table_args__ = (
+        Index("idx_name", "name"),
+        Index("idx_contact_person", "contact_person"),
+    )
     stock_batches = relationship("StockBatch", back_populates="supplier")
     purchase_orders = relationship("PurchaseOrder", back_populates="supplier")
     
@@ -80,4 +84,35 @@ class SearchSupplier:
                "contact_person": supplier.contact_person
                }
           }
+class GetSupplier:
+    def __init__(self, query, db):
+        self.query = query.strip()
+        self.db = db
+        
+    def __repr__(self):
+        return f"GetSupplier(query='{self.query}', db='{self.db}')"
     
+    def lookup_supplier(self):
+        if not self.query:
+            raise HTTPException(status_code=400, detail="Search term can not be empty")
+        suppliers = self.db.query(Supplier).filter(
+            or_(
+                Supplier.name.ilike(f"{self.query}%"),
+                Supplier.contact_person.ilike(f"%{self.query}%")
+            )).limit(20).all()
+        
+        if not suppliers:
+            logger.info(f"lookup_supplier: {self.query} not found!")
+        [print(supplier) for supplier in suppliers]
+        return {
+            "status": "success",
+            "count" : len(suppliers),
+            "data": [{
+                "id": supplier.id,
+                "name": supplier.name,
+                "contact_person": supplier.contact_person,
+                "email": supplier.email,
+                "phone" : supplier.phone,
+                "address": supplier.address
+            } for supplier in suppliers]
+        }

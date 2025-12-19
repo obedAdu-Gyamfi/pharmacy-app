@@ -2,7 +2,7 @@ from fastapi import FastAPI, Form,HTTPException, Depends, Request, APIRouter
 from fastapi.responses import Response
 from models.database import DB
 from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch
-from models.suppliers import CreateSupplier, SearchSupplier
+from models.suppliers import CreateSupplier, SearchSupplier, GetSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch, GenericProductSearch
 from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO
 from models.customers import CreateCustomer
@@ -309,12 +309,12 @@ async def get_user_by_name(
 
 @app.get("/search-user/")
 async def search_user(
-     username: str,
+     query: str,
      db: Session = Depends(db_instance.get_db)
 ):
      try:
           result = UserSearch(
-               username,
+               query,
                db
           ).lookup_user()
           return result
@@ -383,7 +383,24 @@ async def get_supplier_by_id(
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive user")
 
-     
+@app.get("/search-supplier/")
+async def search_supplier(
+     query: str,
+     db: Session = Depends(db_instance.get_db)   
+):
+     try:
+          result = GetSupplier(
+               query,
+               db
+          ).lookup_supplier()
+          return result
+     except RuntimeError as e:
+          logger.error(f"Search Supplier: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"search Supplier_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Supplier: {query} not found!")
 @app.post("/add-product/")
 async def add_product(
      name: str = Form(...),
@@ -437,12 +454,12 @@ async def get_product_by_barcode(
      
 @app.get("/search-product/")
 async def search_product(
-     name: str,
+     query: str,
      db: Session = Depends(db_instance.get_db)   
 ):
      try:
           result = GenericProductSearch(
-               name,
+               query,
                db
           ).lookup_product()
           return result
@@ -452,7 +469,7 @@ async def search_product(
      except Exception as e:
           logger.debug(f"search product_DB Error: {e}")
           db.rollback()
-          raise HTTPException(status_code=500, detail=f"Product: {name} not found!")
+          raise HTTPException(status_code=500, detail=f"Product: {query} not found!")
      
 @app.post("/add-stock-batch/")
 async def add_stock_batch(
