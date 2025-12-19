@@ -242,7 +242,7 @@ class RecentTransaction:
  
  
  
-class PurchaseOrder(BASE):  
+class PurchaseOrder(BASE):
     __tablename__ = "purchase_orders"
     id = Column(Integer, primary_key=True, autoincrement=True)
     po_number = Column(String(50), unique=True, nullable=False)
@@ -258,7 +258,34 @@ class PurchaseOrder(BASE):
     supplier = relationship("Supplier", back_populates="purchase_orders")
     items = relationship("PurchaseOrderItem", back_populates="po", cascade="all, delete")
 
-
+class CreatePO:
+    
+    def __init__(self, supplier_id, expt_date, status, total_amount, notes, user_id, db):
+        self.supplier_id = supplier_id
+        self.expt_date = expt_date
+        self.status = status
+        self.po_number = f"PO#-{int(datetime.datetime.now(datetime.timezone.utc).timestamp())}"
+        self.order_date = date.today()
+        self.user_id = user_id
+        self.total_amount = total_amount
+        self.notes = notes
+        self.db = db
+    def __repr__(self):
+        return f"CreatePO(supplier_id='{self.supplier_id}', exp_date='{self.expt_date}', total_amount='{self.total_amount}',notes='{self.notes}',status='{self.status}')"
+    def create_po(self):
+        new_po = PurchaseOrder(
+            po_number = self.po_number,
+            supplier_id = self.supplier_id,
+            user_id = self.user_id,
+            order_date = self.order_date,
+            expected_delivery_date = self.expt_date,
+            status = self.status,
+            total_amount = self.total_amount,
+            notes = self.notes
+        )
+        self.db.add(new_po)
+        self.db.commit()
+        
         
     
 class PurchaseOrderItem(BASE):
@@ -272,4 +299,5 @@ class PurchaseOrderItem(BASE):
     po = relationship("PurchaseOrder", back_populates="items")
     product = relationship("Product", back_populates="purchase_order_items")
     
+
     

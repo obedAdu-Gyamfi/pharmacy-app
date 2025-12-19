@@ -4,7 +4,7 @@ from models.database import DB
 from models.user import SearchUser, CreateUser, User, DeleteUser
 from models.suppliers import CreateSupplier, SearchSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch
-from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction
+from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO
 from models.customers import CreateCustomer
 from models.config import WriteAuditLogs, AuditLog
 from models.base import BASE, audit_user_id, audit_ip
@@ -605,7 +605,35 @@ def recent_activity(db: Session = Depends(db_instance.get_db)):
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive transaction")
 
+@app.post("/add-po/")
+def add_po(
+     supplier_id: str = Form(...),
+     expt_date: date = Form(...),
+     status: str = Form(...),
+     total_amount: Decimal = Form(...), 
+     notes: str = Form(...),
+     current_user = Depends(require_role("admin")), 
+     db:Session = Depends(db_instance.get_db)):
+     try:
+          CreatePO(
+               supplier_id,
+               expt_date,
+               status,
+               total_amount,
+               notes,
+               current_user.id,
+               db
+          ).create_po()
+     except RuntimeError as e:
+          logger.error(f"Purchasing Order: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"Purchasing Order_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail=f"Failed to create PO")
 
+     
+          
 
 
 
