@@ -1,9 +1,10 @@
 <h1 align="center">Pharmacy App</h1>
 <p align="center">A modern pharmacy management system for inventory, sales, and reporting.</p>
 
+
 ## 🚀 Overview
 
-Pharmacy App provides POS, inventory tracking, supplier management, customer records, and sales analytics with role-based access.
+Pharmacy App provides POS, inventory tracking, supplier  management, customer records, and sales analytics with role-based access.
 
 ## 🧩 Features
 
@@ -159,3 +160,15 @@ Backend (`app`):
 - Frontend: `pharmacy-ui/` (React + Vite + Tailwind)
 - Compose: `docker-compose.yml`
 - SQL schema: `sql/schema.sql`
+
+## 👨 Author
+
+**Obed Adu-Gyamfi**  
+software engineer  | mathematics enthusiast  
+- **Github:** [https://github.com/obedAdu-Gyamfi](https://github.com/obedAdu-Gyamfi)  
+- **LinkedIn:** [https://www.linkedin.com/in/obedadu-gyamfi](https://www.linkedin.com/in/obedadu-gyamfi)  
+- **Email:** [adugyamfiobed.tpp3@gmail.com](adugyamfiobed.tpp3@gmail.com)  
+- **Location: Ghana**
+
+***
+![My image](/pharmacy-ui/public/dashboard_screenshot.png)
