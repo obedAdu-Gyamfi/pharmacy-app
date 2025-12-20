@@ -171,4 +171,4 @@ software engineer  | mathematics enthusiast
 - **Location: Ghana**
 
 ***
-![My image](pharmacy-ui/public/dashboard_screenshot.png)
+![Dashboard Image](pharmacy-ui/public/dashboard_screenshot.png)
