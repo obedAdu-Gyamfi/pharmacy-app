@@ -28,12 +28,10 @@
 ## 🗼Installation
 
 1. Clone the repository
+
     ```bash
     git clone https://www.github.com/obedAdu-Gyamfi/pharmacy-app.git
     cd pharmacy-app
     bash script.sh
-    cd pharmacy-ui
-    npm install
-    npm run dev
     ```
 
