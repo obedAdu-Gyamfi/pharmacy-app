@@ -151,7 +151,7 @@ class GenericProductSearch:
                    "supplier": batch.supplier.name if batch and batch.supplier else None,
                    "Unit Price": product.unit_price,
                    "expiry_date": batch.expiry_date if batch else None,
-                   "batch_id" : batch.id if batch else None,
+                   "batch_number" : batch.batch_number if batch else None,
                    "reorder_level": product.reorder_level,
                    "description": product.description
                })
