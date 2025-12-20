@@ -1,0 +1,37 @@
+services:
+  app-backend:
+    build: ./app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  mysql-db:
+    image: mysql:8.0.44
+    environment:
+      MYSQL_ROOT_PASSWORD: SET_YOUR_ROOT_PASSWORD
+      MYSQL_DATABASE: Pharmacy
+      MYSQL_USER: YOUR_USERNAME
+      MYSQL_PASSWORD: SET_YOUR_USER_PASSWORD
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p@SET_YOUR_USER_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app-frontend:
+    build: ./pharmacy-ui
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app-backend
+
+volumes:
+  mysql_data:
