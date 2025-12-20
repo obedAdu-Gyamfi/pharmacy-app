@@ -14,6 +14,8 @@ import { CreateSupplier } from "./components/Suppliers/CreateSupplier";
 import { SalesPage } from "./components/Sales/SalesPage";
 import { Suppliers } from "./components/Suppliers/Suppliers";
 import { CreateStockBatch } from "./components/Products/CreateStockBatch";
+import { CustomersPage } from "./components/Customers/CustomersPage";
+import { CreateCustomers } from "./components/Customers/CreateCustomers";
 
 const App = () => {
   useEffect(() => {
@@ -41,27 +43,19 @@ const App = () => {
         {
           path: "users",
           element: <Users />,
-          children: [
-            {
-              path: "create-user",
-              element: <CreateUser />,
-            },
-          ],
+        },
+        {
+          path: "users/create-user",
+          element: <CreateUser />,
         },
 
         {
           path: "products",
           element: <ProductsPage />,
-          children: [
-            {
-              path: "add",
-              element: <CreateProduct />,
-            },
-            { /*{
-              path: "stock",
-              element: <CreateStockBatch /> 
-            }*/}
-          ],
+        },
+        {
+          path: "products/add",
+          element: <CreateProduct />,
         },
         {
           path: "sales",
@@ -79,13 +73,22 @@ const App = () => {
           children: [
             {
               path: "search",
-              element: <Suppliers />
-            }, 
+              element: <Suppliers />,
+            },
             {
               path: "add",
               element: <CreateSupplier />,
             },
-
+          ],
+        },
+        {
+          path: "customers",
+          element: <CustomersPage />,
+          children: [
+            {
+              path: "add",
+              element: <CreateCustomers />,
+            },
           ],
         },
       ],
