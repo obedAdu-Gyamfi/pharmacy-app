@@ -26,6 +26,10 @@ from sqlalchemy.inspection import inspect
 from decimal import Decimal
 from models.log import logger
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from jose import jwt, JWTError
 
 
 
@@ -65,10 +69,7 @@ def get_current_user(token: str = Depends(oAuth2_schema), db: Session = Depends(
                raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
-from typing import Optional
-from fastapi import Depends
-from sqlalchemy.orm import Session
-from jose import jwt, JWTError
+
 
 def get_current_user_optional(
     token: str = Depends(oAuth2_schema),
@@ -112,8 +113,6 @@ def require_role(*roles: str):
                raise HTTPException(status_code=403, detail="Insufficient Permission")
           return current_user
      return role_dependency
-
-
 
 
 
@@ -164,8 +163,7 @@ def on_startup():
      db_instance.db_init()
      logger.info("Database initialized")
           
-          
-          
+ 
           
 @app.on_event("shutdown")
 def on_shutdown():
@@ -244,7 +242,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = D
           "access_token" : access_token,
           "token_type" : "bearer"
           }
-#app.include_router(router) 
+
+
 @app.post("/logout/")
 async def logout(user: Optional[User] = Depends(get_current_user_optional)):
     if user:
@@ -253,7 +252,7 @@ async def logout(user: Optional[User] = Depends(get_current_user_optional)):
         logger.info("logout attempted - no valid user token")
     return {"message": "Logged out successfully"}
 
-     
+
 @app.post("/sign-up/")
 async def add_user(
      username: str = Form(...),
@@ -286,7 +285,7 @@ async def add_user(
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to add {username} to database")
      
-     
+
 @app.get("/get-user/{user_name}")
 async def get_user_by_name(
      user_name: str,

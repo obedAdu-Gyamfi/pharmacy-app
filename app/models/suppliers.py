@@ -71,12 +71,11 @@ class SearchSupplier:
     
     def search_supplier(self):
         supplier = self.db.query(Supplier).filter(Supplier.id == self.supplier_id).first()
-        #print(user)
+
         if not supplier:
             logger.error("search_supplier: supplier not found!")
             raise Exception(status_code=404, detail="supplier not found")
     
-        #return user.username
         return {
                "status": "success",
                "data" : {
