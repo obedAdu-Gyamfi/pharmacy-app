@@ -28,6 +28,7 @@
 ## 🔌 Enviroment Variables
 
 check sample(`.env.example`). create a `.env` file in the root directory and set the following variables:
+    
     ```env
     # Database Configuration
     DB_HOST=localhost
