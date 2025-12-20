@@ -1,6 +1,4 @@
-import { FiArrowLeft } from "react-icons/fi";
-import { CreateUser } from "./CreateUser";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { SalesTopBar } from "../Sales/SalesTopBar";
 import { SearchBar } from "../Sidebar/SearchBar";
 

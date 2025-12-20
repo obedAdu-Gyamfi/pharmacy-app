@@ -1,4 +1,3 @@
-import React from 'react'
 import { SearchBar } from '../Sidebar/SearchBar';
 
 export const Suppliers = () => {

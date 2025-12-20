@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../Login/axiosClient';
 import { SalesTopBar } from '../Sales/SalesTopBar';
+import { CreateStockBatch } from './CreateStockBatch';
 
 
 export const CreateProduct = () => {
@@ -40,7 +41,8 @@ export const CreateProduct = () => {
     };
   };
   return (
-    <>  
+    <> 
+    <div className="grid pb-4 gap-2 grid-cols-[650px_1fr] pt-4">
       <div>
         <section
           id="create user"
@@ -193,12 +195,16 @@ export const CreateProduct = () => {
                 type="submit"
                 className="w-full py-2 text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Create New User
+                Submit
               </button>
             </form>
           </div>
         </section>
       </div>
+      <div>
+        <CreateStockBatch />
+      </div>
+    </div>
     </>
   );
 }

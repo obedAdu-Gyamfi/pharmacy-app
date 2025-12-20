@@ -26,6 +26,7 @@ const routes = [
     children: [
       { title: "All Products", path: "/products" },
       { title: "Add Product", path: "/products/add" },
+      {/*{ title: "Add Stock Batch", path: "/products/stock"}*/}
     ],
   },
 

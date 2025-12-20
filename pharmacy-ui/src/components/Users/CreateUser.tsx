@@ -25,6 +25,12 @@ export const CreateUser = () => {
          data.append("phone", phone);
          const res = await api.post("/sign-up/", data);
          alert ("New User Created Successfully")
+         setUsername("");
+         setPassword("");
+         setFullname("");
+         setRole("");
+         setEmail("");
+         setPhone("");
        } catch (err) {
          alert("Unable to create user");
        }

@@ -13,6 +13,7 @@ import { SupplierPage } from "./components/Suppliers/SupplierPage";
 import { CreateSupplier } from "./components/Suppliers/CreateSupplier";
 import { SalesPage } from "./components/Sales/SalesPage";
 import { Suppliers } from "./components/Suppliers/Suppliers";
+import { CreateStockBatch } from "./components/Products/CreateStockBatch";
 
 const App = () => {
   useEffect(() => {
@@ -56,6 +57,10 @@ const App = () => {
               path: "add",
               element: <CreateProduct />,
             },
+            { /*{
+              path: "stock",
+              element: <CreateStockBatch /> 
+            }*/}
           ],
         },
         {

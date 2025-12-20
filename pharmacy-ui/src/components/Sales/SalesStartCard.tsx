@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../Login/axiosClient";
 import { SalesTransaction } from "./SalesTransaction";
-import { SalesTopBar } from "./SalesTopBar";
-import axios from "axios";
+
 
 export const SalesStartCard = () => {
   const [saleItems, setSaleItems] = useState<any[]>([]);

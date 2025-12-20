@@ -1,7 +1,5 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { SalesTopBar } from "../Sales/SalesTopBar";
-import { Search } from "../Sidebar/Search";
 import { SearchBar } from "../Sidebar/SearchBar";
 
 export const ProductsPage = () => {
