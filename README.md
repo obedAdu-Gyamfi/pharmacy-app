@@ -25,13 +25,39 @@
 - Docker
 - git
 
-## 🗼Installation
+## 🔌 Enviroment Variables
 
-1. Clone the repository
+<p align="center">check sample(`.env.example`). create a `.env` file in the root directory and set the following variables:</p>
+    ```env
+    # Database Configuration
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_NAME=your_db
+    DB_USER=your_db_username
+    DB_PASSWORD=your_db_password
+
+    # Application Configuration
+    SECRETE_KEY=set_your_secrete_key
+
+    ```
+
+## 🗼Local Development Installation
+
+1. Installation without a docker-compose.yml file
+    
+    a. Clone the repository
 
     ```bash
     git clone https://www.github.com/obedAdu-Gyamfi/pharmacy-app.git
     cd pharmacy-app
     bash script.sh
+    ```
+
+2. Installation with a docker-compose.yml file
+ <p align="center">Check sample (`docker-compose-example.yml`). Set up a docker configuration file</p>
+    ```bash
+    docker compose up --build -d
+    docker compose up
+
     ```
 
