@@ -26,7 +26,9 @@ const routes = [
     children: [
       { title: "All Products", path: "/products" },
       { title: "Add Product", path: "/products/add" },
-      {/*{ title: "Add Stock Batch", path: "/products/stock"}*/}
+      {
+        /*{ title: "Add Stock Batch", path: "/products/stock"}*/
+      },
     ],
   },
 
@@ -36,7 +38,7 @@ const routes = [
     children: [
       { title: "All Suppliers", path: "/suppliers" },
       { title: "Add Supplier", path: "/suppliers/add" },
-      { title: "Purchasing Orders", path: "/suppliers/po"}
+      { title: "Purchasing Orders", path: "/suppliers/po" },
     ],
   },
 
@@ -44,8 +46,10 @@ const routes = [
     title: "Sales",
     Icon: FcSalesPerformance,
     children: [
-      { title: "Sales Dashboard", path: "/sales" },
       { title: "POS", path: "/sales/pos" },
+      {
+        /* { title: "Sales Dashboard", path: "/sales" }, */
+      },
     ],
   },
 
