@@ -27,7 +27,7 @@
 
 ## 🔌 Enviroment Variables
 
-<p align="center">check sample(`.env.example`). create a `.env` file in the root directory and set the following variables:</p>
+check sample(`.env.example`). create a `.env` file in the root directory and set the following variables:
     ```env
     # Database Configuration
     DB_HOST=localhost
@@ -54,10 +54,9 @@
     ```
 
 2. Installation with a docker-compose.yml file
- <p align="center">Check sample (`docker-compose-example.yml`). Set up a docker configuration file</p>
+ Check sample (`docker-compose-example.yml`). Set up a docker configuration file
     ```bash
     docker compose up --build -d
     docker compose up
-
     ```
 
