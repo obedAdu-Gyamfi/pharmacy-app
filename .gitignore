@@ -1,5 +1,5 @@
 *.log
-.env
+*.env
 __pycache__/
 *.swp
 myenv/
@@ -22,6 +22,6 @@ dist-ssr
 *.sw?
 
 #docker config files
-docker-compose.yml
+*.yml
 
 backup/
