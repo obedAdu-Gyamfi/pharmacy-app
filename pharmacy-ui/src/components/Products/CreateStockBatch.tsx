@@ -117,6 +117,7 @@ export const CreateStockBatch = () => {
                   type="number"
                   id="quantity"
                   name="quantity"
+                  placeholder="Quantity"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"

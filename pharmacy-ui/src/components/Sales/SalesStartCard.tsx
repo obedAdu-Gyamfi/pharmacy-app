@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../Login/axiosClient";
 import { SalesTransaction } from "./SalesTransaction";
 
-
 export const SalesStartCard = () => {
   const [saleItems, setSaleItems] = useState<any[]>([]);
 
@@ -64,6 +63,8 @@ export const SalesStartCard = () => {
 
           <div className="space-y-4">
             <SalesItem
+              sale_id={sale_id}
+              setSaleID={setSaleId}
               product_name={product_name}
               setProductName={setProductName}
               barcode={barcode}
@@ -109,7 +110,7 @@ interface Props {
   setPaymentStatus: (value: string) => void;
   notes: string;
   setNotes: (value: string) => void;
-  setSaleId: (value: string) => void
+  setSaleId: (value: string) => void;
 }
 
 const Sales = ({
@@ -134,18 +135,16 @@ const Sales = ({
       data.append("payment_status", payment_status);
       data.append("notes", notes);
       const res = await api.post("/add-sale/", data);
-      
+
       setCusId("");
       setPaymentMethod("");
       setPaymentStatus("");
       setNotes("");
 
       if (res.data.status === "success") {
-        const newSaleId = res.data.message
+        const newSaleId = res.data.message;
         setSaleId(newSaleId);
         alert("New Sale Created Successfully");
-
-
       }
     } catch (err) {
       alert("Unable to Create Sale");
@@ -230,6 +229,8 @@ const Sales = ({
 };
 
 interface IProps {
+  sale_id: string;
+  setSaleID: React.Dispatch<React.SetStateAction<string>>;
   product_name: string;
   setProductName: React.Dispatch<React.SetStateAction<string>>;
   barcode: string;
@@ -247,6 +248,8 @@ interface IProps {
 }
 
 const SalesItem: React.FC<IProps> = ({
+  sale_id,
+  setSaleID,
   product_name,
   setProductName,
   barcode,
@@ -290,6 +293,7 @@ const SalesItem: React.FC<IProps> = ({
     const total = Number(quantity) * Number(unit_price);
 
     const newItem = {
+      sale_id,
       product_name,
       barcode,
       batch_id,
@@ -301,6 +305,7 @@ const SalesItem: React.FC<IProps> = ({
 
     setSaleItems([...saleItems, newItem]);
 
+    setSaleID("");
     setProductName("");
     setBarcode("");
     setQuantity("");
@@ -313,8 +318,37 @@ const SalesItem: React.FC<IProps> = ({
       <div className="rounded border border-stone-300 p-4">
         <form className="gap-4" onSubmit={handleSubmit}>
           <div>
+            <label className="block mb-1 text-gray-600" htmlFor="barcode">
+              Barcode
+            </label>
+            <input
+              type="text"
+              id="barcode"
+              name="barcode"
+              placeholder="Enter Barcode"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-gray-600" htmlFor="sale_id">
+              Sale ID
+            </label>
+            <input
+              type="number"
+              id="sale_id"
+              name="sale_id"
+              placeholder="Enter Sale ID"
+              value={sale_id}
+              onChange={(e) => setSaleID(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
             <label className="block mb-1 text-gray-600" htmlFor="product_name">
-            Product Name
+              Product Name
             </label>
             <input
               type="text"
@@ -323,21 +357,6 @@ const SalesItem: React.FC<IProps> = ({
               placeholder="Enter Product Name"
               value={product_name}
               readOnly
-              className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 text-gray-600" htmlFor="barcode">
-              Barcode
-            </label>
-            <input
-              type="text"
-              id="barcode"
-              name="barcode"
-              placeholder="Enter Sale ID"
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
