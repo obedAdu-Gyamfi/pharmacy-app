@@ -152,6 +152,7 @@ class DeleteUser:
             logger.error(f"{user_id} delete failed!")
         return user_id
     
+    
 class Profile:
     
     def __init__(self):
