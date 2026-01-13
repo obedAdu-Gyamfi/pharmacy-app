@@ -184,21 +184,92 @@ class GetSales:
             .filter(Sale.sale_date < end_date + timedelta(days=1))
             .all()
         )
+        pill_start_date = start_date - timedelta(days=self.period)
+        pill_end_date = start_date
+        psearch = (
+            self.db.query(Sale)
+            .filter(Sale.sale_date >= pill_start_date)
+            .filter(Sale.sale_date < pill_end_date)
+            .all()
+        )
 
+        pill_prev = 0
+        total_revenue = 0
+        average_sale = 0
+        pill_avg = 0
+        if psearch:
+            for i in psearch:
+                logger.info(f"Pill Search {i.total}")
+            pill_prev = round(sum(item.total for item in psearch), 2)
+            pill_avg = round((pill_prev / len(psearch)), 2)
+            
         if search:
             total_revenue = round(sum(item.total for item in search), 2)
-            average_sale = f"{total_revenue / len(search):.2f}"
+            average_sale = round((total_revenue / len(search)), 2)
+        
+        if (pill_prev > 0 and total_revenue != None):
+            pilltext_gross = round((((total_revenue - pill_prev) / pill_prev) * 100),2)
+        else:
+            pilltext_gross = 0
+        if (pill_avg > 0 and average_sale != None):
+            pilltext_avg = round((((average_sale - pill_avg)/ pill_avg) * 100), 2)
+        else:
+            pilltext_avg = 0
+        logger.info(f"Pilltext {pilltext_gross:.2f}")
+        
+        annual = 365
+        
+        t_start = date.today() - timedelta(days=annual)
+        t_end = date.today()
+        
+        current_trailing_sales = (
+            self.db.query(Sale)
+            .filter(Sale.sale_date >= t_start)
+            .filter(Sale.sale_date < t_end + timedelta(days=1))
+            .all()
+        )
+        if current_trailing_sales:
+            trailing_year = round(sum(item.total for item in current_trailing_sales), 2)
+        else:
+            trailing_year = 0
+        prev_t_start = t_start - timedelta(days=annual)
+        prev_t_end = t_start
+        
+        previous_trailing_sales = (
+            self.db.query(Sale)
+            .filter(Sale.sale_date >= prev_t_start)
+            .filter(Sale.sale_date < prev_t_end)
+            .all()
+        )
+        if previous_trailing_sales:
+            previous_trailing_year = round((sum(item.total for item in previous_trailing_sales)), 2)
+        else:
+            previous_trailing_year = 0
             
+        if (previous_trailing_year > 0 ):
+            pilltext_trailing = round(((trailing_year - previous_trailing_year)/ previous_trailing_year) * 100, 2)
+        else:
+            pilltext_trailing = 0
+        
         if not search:
             logger.info("sales search was unsuccessful")
+            """
             return {
                 "total_revenue": 0,
-                "average_sale": 0
+                "average_sale": 0,
+                "pilltext_gross": 0,
+                "pilltext_average": 0
             }
+            """
+            
     
         return {
             "total_revenue": total_revenue,
-            "average_sale": average_sale
+            "average_sale": average_sale,
+            "pilltext_gross": pilltext_gross,
+            "pilltext_avg": pilltext_avg,
+            "trailing_year": trailing_year,
+            "pilltext_trailing": pilltext_trailing
         }
 class RecentTransaction:
     
