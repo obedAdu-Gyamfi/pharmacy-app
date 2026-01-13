@@ -25,6 +25,7 @@ export const StartCards = ({selectedPeriod}: StarCardsProps) => {
           `http://127.0.0.1:8000/get-sale-period/${selectedPeriod}`
          );
         setSalesData(res.data);
+        console.log(salesData)
        } catch (err) {
         console.error("Failed to fetch sale:", err);
        }
@@ -32,30 +33,29 @@ export const StartCards = ({selectedPeriod}: StarCardsProps) => {
 
     fetchSales();
    }, [selectedPeriod]);
-
   return (
     <>
       <Card
         title="Gross Revenue"
         value={`₵${salesData?.total_revenue || 0}`}
-        pillText="2.75%"
-        trend="up"
+        pillText={`${salesData?.pilltext_gross || 0}%`}
+        trend={salesData?.pilltext_gross < 0 ? "down" : "up"}
         period={selectedPeriod}
       />
 
       <Card
         title="Avg Sale"
         value={`₵${salesData?.average_sale || 0}`}
-        pillText="1.01%"
-        trend="down"
+        pillText={`${salesData?.pilltext_avg || 0}%`}
+        trend={salesData?.pilltext_avg < 0 ? "down" : "up"}
         period={selectedPeriod}
       />
 
       <Card
         title="Trailing Year"
-        value="₵278,054.24"
-        pillText="60.75%"
-        trend="up"
+        value={`₵${salesData?.trailing_year || 0}`}
+        pillText={`${salesData?.pilltext_trailing || 0}%`}
+        trend={salesData?.pilltext_trailing < 0 ? "down" : "up"}
         period="Previous 365 days"
       />
     </>
