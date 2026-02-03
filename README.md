@@ -147,6 +147,10 @@ Backend (`app`):
 - `pip install -r app/requirements.txt` — install dependencies
 - `uvicorn app.main:app --reload` — run dev server
 
+## 📚 Documentation
+
+See `docs/README.md` for user and developer documentation, including setup and workflows.
+
 ## 🛠️ Troubleshooting
 
 - MySQL connection refused: verify `DB_HOST`, `DB_PORT`, credentials, and that MySQL is running.
