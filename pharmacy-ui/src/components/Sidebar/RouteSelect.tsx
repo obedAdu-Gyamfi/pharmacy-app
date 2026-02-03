@@ -38,7 +38,7 @@ const routes = [
     children: [
       { title: "All Suppliers", path: "/suppliers" },
       { title: "Add Supplier", path: "/suppliers/add" },
-      { title: "Purchasing Orders", path: "/suppliers/po" },
+      { title: "Purchasing Orders", path: "/purchasing-order" },
     ],
   },
 

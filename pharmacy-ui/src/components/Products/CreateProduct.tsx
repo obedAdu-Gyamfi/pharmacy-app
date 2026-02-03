@@ -46,7 +46,7 @@ export const CreateProduct = () => {
       <div>
         <section
           id="create user"
-          className="flex justify-center items-center max-h-screen bg-gray-100"
+          className="flex justify-center items-center max-h-screen bg-transparent"
         >
           <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-lg">
             <h2 className="text-3xl font-bold text-center text-gray-800">

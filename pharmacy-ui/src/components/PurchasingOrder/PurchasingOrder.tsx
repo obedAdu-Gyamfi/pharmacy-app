@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import api from "../Login/axiosClient";
 import { SalesTopBar } from "../Sales/SalesTopBar";
 
@@ -76,7 +77,7 @@ export const PurchasingOrder = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100">
+    <div className="flex min-h-screen flex-col bg-transparent">
       <SalesTopBar />
       <main className="flex-1 p-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">

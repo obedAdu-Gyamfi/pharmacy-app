@@ -4,7 +4,7 @@ import { SalesStartCard } from "./SalesStartCard";
 
 export const POS = () => {
   return (
-    <div className="grid pb-4 gap-4 grid-cols pt-4 bg-blue-500">
+    <div className="grid gap-4 bg-[#0b1220] px-4 pb-6 pt-6 text-slate-100 shadow-inner">
       <Link to="/sales" className="block text-blue-600"></Link>
       <SalesStartCard />
     </div>
