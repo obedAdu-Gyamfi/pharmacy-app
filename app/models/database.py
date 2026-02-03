@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 from .base import BASE
 from .log import logger
-from .user import User
+from .user import User, PasswordResetToken
 from .config import SystemSetting, AuditLog
 from .customers import Customer
 from .suppliers import Supplier
@@ -92,5 +92,4 @@ class DB:
             db.close()
    
     
-
 

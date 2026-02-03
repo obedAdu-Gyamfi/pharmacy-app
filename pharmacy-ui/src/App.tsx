@@ -17,6 +17,7 @@ import { CreateStockBatch } from "./components/Products/CreateStockBatch";
 import { CustomersPage } from "./components/Customers/CustomersPage";
 import { CreateCustomers } from "./components/Customers/CreateCustomers";
 import { PurchasingOrder } from "./components/PurchasingOrder/PurchasingOrder";
+import { ResetPassword } from "./components/Login/ResetPassword";
 
 const App = () => {
   useEffect(() => {
@@ -28,6 +29,10 @@ const App = () => {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/reset-password",
+      element: <ResetPassword />,
     },
     {
       path: "/",
@@ -61,12 +66,6 @@ const App = () => {
         {
           path: "sales",
           element: <SalesPage />,
-          children: [
-            {
-              path: "pos",
-              element: <POS />,
-            },
-          ],
         },
         {
           path: "suppliers",
@@ -97,6 +96,14 @@ const App = () => {
           element: <PurchasingOrder />,
         },
       ],
+    },
+    {
+      path: "/pos",
+      element: <POS />,
+    },
+    {
+      path: "/sales/pos",
+      element: <POS />,
     },
   ]);
   return <RouterProvider router={router} />;

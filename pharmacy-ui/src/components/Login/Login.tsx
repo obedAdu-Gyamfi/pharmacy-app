@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "./auth";
 import { Link } from "react-router-dom";
 import { startTokenWatcher } from "./StartTokenWatcher";
+import { jwtDecode } from "jwt-decode";
 
 
 const Login = () => {
@@ -15,7 +16,13 @@ const Login = () => {
     try {
       const result = await login(username, password);
       localStorage.setItem("token", result.access_token);
-      navigate("/dashboard");
+      const decoded: any = jwtDecode(result.access_token);
+      const role = decoded?.role;
+      if (role !== "admin" && role !== "manager") {
+        navigate("/pos");
+      } else {
+        navigate("/dashboard");
+      }
       startTokenWatcher();
     } catch (err) {
       alert("Invalid credentials");
@@ -73,9 +80,9 @@ const Login = () => {
             </form>
 
             <div className="flex justify-between text-sm text-gray-500">
-              <a href="#" className="hover:text-blue-500">
+              <Link to="/reset-password" className="hover:text-blue-500">
                 Forgot Password?
-              </a>
+              </Link>
               <a href="#" className="hover:text-blue-500">
                 Sign Up
               </a>

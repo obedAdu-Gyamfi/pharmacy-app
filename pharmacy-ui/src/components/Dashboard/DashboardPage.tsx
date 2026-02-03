@@ -1,8 +1,29 @@
 import Sidebar from "../Sidebar/Sidebar";
 import Layout from "../../layouts/RootLayout";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const decoded: any = jwtDecode(token);
+      const role = decoded?.role;
+      if (role !== "admin" && role !== "manager") {
+        navigate("/pos");
+      }
+    } catch (err) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   return (
     <>
       <Layout>

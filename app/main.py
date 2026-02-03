@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form,HTTPException, Depends, Request, APIRouter
 from fastapi.responses import Response
 from models.database import DB
-from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch
+from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch, PasswordRecovery
 from models.suppliers import CreateSupplier, SearchSupplier, GetSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch, GenericProductSearch
 from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO, GetPurchaseOrders
@@ -237,7 +237,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = D
      if not user:
           logger.error("login: Invalid Credentials")
           raise HTTPException(status_code=401, detail="Invalid Credentials")
-     access_token = get_access_token({"sub": user.username})
+     access_token = get_access_token({"sub": user.username, "role": user.role})
      return {
           "access_token" : access_token,
           "token_type" : "bearer"
@@ -251,6 +251,43 @@ async def logout(user: Optional[User] = Depends(get_current_user_optional)):
     else:
         logger.info("logout attempted - no valid user token")
     return {"message": "Logged out successfully"}
+
+
+@app.post("/password-reset/request")
+async def password_reset_request(
+     email: str = Form(...),
+     db: Session = Depends(db_instance.get_db)
+):
+     try:
+          result = PasswordRecovery(db).request_password_reset(email)
+          return JSONResponse(status_code=200, content=result)
+     except RuntimeError as e:
+          logger.error(f"password_reset_request: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"password_reset_request_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail="Failed to request password reset")
+
+
+@app.post("/password-reset/confirm")
+async def password_reset_confirm(
+     token: str = Form(...),
+     new_password: str = Form(...),
+     db: Session = Depends(db_instance.get_db)
+):
+     try:
+          result = PasswordRecovery(db).reset_password(token, new_password)
+          return JSONResponse(status_code=200, content=result)
+     except HTTPException as e:
+          raise e
+     except RuntimeError as e:
+          logger.error(f"password_reset_confirm: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"password_reset_confirm_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail="Failed to reset password")
 
 
 @app.post("/sign-up/")
