@@ -4,7 +4,7 @@ from models.database import DB
 from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch
 from models.suppliers import CreateSupplier, SearchSupplier, GetSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch, GenericProductSearch
-from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO
+from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO, GetPurchaseOrders
 from models.customers import CreateCustomer
 from models.config import WriteAuditLogs, AuditLog
 from models.base import BASE, audit_user_id, audit_ip
@@ -661,6 +661,22 @@ def recent_activity(db: Session = Depends(db_instance.get_db)):
           logger.debug(f"get_sales_period_DB Error: {e}")
           db.rollback()
           raise HTTPException(status_code=500, detail=f"Failed to retreive transaction")
+
+@app.get("/purchase-orders/")
+def purchase_orders(
+     current_user = Depends(require_role("admin")),
+     db: Session = Depends(db_instance.get_db),
+):
+     try:
+          result = GetPurchaseOrders(db).list_purchase_orders()
+          return result
+     except RuntimeError as e:
+          logger.error(f"get_purchase_orders: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"get_purchase_orders_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail="Failed to retrieve purchase orders")
 
 @app.post("/add-po/")
 def add_po(

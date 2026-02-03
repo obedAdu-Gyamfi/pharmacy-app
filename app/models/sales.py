@@ -361,6 +361,50 @@ class CreatePO:
         }
         
         
+class GetPurchaseOrders:
+    
+    def __init__(self, db, limit=50):
+        self.db = db
+        self.limit = limit
+        
+    def __repr__(self):
+        return f"GetPurchaseOrders(limit={self.limit}, db={self.db})"
+    
+    def list_purchase_orders(self):
+        orders = (
+            self.db.query(PurchaseOrder)
+            .order_by(PurchaseOrder.id.desc())
+            .limit(self.limit)
+            .all()
+        )
+        
+        return {
+            "status": "success",
+            "count": len(orders),
+            "data": [
+                {
+                    "id": order.id,
+                    "po_number": order.po_number,
+                    "supplier_id": order.supplier_id,
+                    "supplier_name": order.supplier.name if order.supplier else None,
+                    "user_id": order.user_id,
+                    "order_date": order.order_date.isoformat() if order.order_date else None,
+                    "expected_delivery_date": order.expected_delivery_date.isoformat()
+                    if order.expected_delivery_date
+                    else None,
+                    "status": order.status,
+                    "total_amount": float(order.total_amount)
+                    if order.total_amount is not None
+                    else None,
+                    "notes": order.notes,
+                    "created_at": order.created_at.isoformat()
+                    if order.created_at
+                    else None,
+                }
+                for order in orders
+            ],
+        }
+        
     
 class PurchaseOrderItem(BASE):
     __tablename__ = "purchase_order_items"
