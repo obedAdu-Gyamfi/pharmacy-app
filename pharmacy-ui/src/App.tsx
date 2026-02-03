@@ -16,6 +16,7 @@ import { Suppliers } from "./components/Suppliers/Suppliers";
 import { CreateStockBatch } from "./components/Products/CreateStockBatch";
 import { CustomersPage } from "./components/Customers/CustomersPage";
 import { CreateCustomers } from "./components/Customers/CreateCustomers";
+import { PurchasingOrder } from "./components/PurchasingOrder/PurchasingOrder";
 
 const App = () => {
   useEffect(() => {
@@ -90,6 +91,10 @@ const App = () => {
               element: <CreateCustomers />,
             },
           ],
+        },
+        {
+          path: "purchasing-order",
+          element: <PurchasingOrder />,
         },
       ],
     },
