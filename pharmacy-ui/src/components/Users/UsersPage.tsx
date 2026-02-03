@@ -20,7 +20,7 @@ const handleUserSelect = (user: { id?: number | string; username?: string; fulln
 }
 
 return (
-  <div className="flex flex-col min-h-screen bg-gray-100">
+  <div className="flex flex-col min-h-screen bg-transparent">
     <SalesTopBar />
     <SearchBar endpoint="/search-user/" onSelect={handleUserSelect} />
     <main className="flex p-4">

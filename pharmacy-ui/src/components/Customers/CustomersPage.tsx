@@ -4,7 +4,7 @@ import { SalesTopBar } from '../Sales/SalesTopBar';
 
 export const CustomersPage = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-transparent">
           <SalesTopBar />
     
           <main className="flex-1 p-4">
