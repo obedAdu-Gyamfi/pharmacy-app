@@ -18,6 +18,7 @@ import { CustomersPage } from "./components/Customers/CustomersPage";
 import { CreateCustomers } from "./components/Customers/CreateCustomers";
 import { PurchasingOrder } from "./components/PurchasingOrder/PurchasingOrder";
 import { ResetPassword } from "./components/Login/ResetPassword";
+import { ProfileWindow } from "./components/Sidebar/ProfileWindow";
 
 const App = () => {
   useEffect(() => {
@@ -90,6 +91,10 @@ const App = () => {
               element: <CreateCustomers />,
             },
           ],
+        },
+        {
+          path: "profile",
+          element: <ProfileWindow />,
         },
         {
           path: "purchasing-order",

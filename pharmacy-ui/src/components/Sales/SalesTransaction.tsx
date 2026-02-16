@@ -3,6 +3,7 @@ import axios from "axios";
 import api from "../Login/axiosClient";
 
 import { useNavigate } from "react-router-dom";
+import { SalesStartCard } from "./SalesStartCard";
 
 interface Props {
   sale_item: string;
@@ -51,10 +52,18 @@ export const SalesTransaction = ({
   async function handleSubmit(e: any) {
     e.preventDefault();
     try {
+      if (!sale_id) {
+        alert("Please create a sale before checkout.");
+        return;
+      }
+      if (saleItems.length === 0) {
+        alert("Add at least one item before checkout.");
+        return;
+      }
       const payload = {
-        sale_id,
+        sale_id: Number(sale_id),
         barcodes: saleItems.map((s) => s.barcode),
-        batch_ids: saleItems.map((s) => s.batch_id),
+        batch_ids: saleItems.map((s) => Number(s.batch_id)),
         quantities: saleItems.map((s) => Number(s.quantity)), // ensure numbers
       };
       const res = await api.post("/add-sale-item/", payload);
@@ -65,11 +74,13 @@ export const SalesTransaction = ({
   }
 
   return (
-    <div className="col-span-12 p-4 rounded border border-stone-300">
+    <div className="col-span-12 p-4 rounded border border-stone-300 text-white">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 font-medium">Sale Items</h3>
+        <h3 className="flex items-center gap-1.5 font-medium text-slate-100">
+          Sale Items
+        </h3>
       </div>
-      <table className="w-full table-auto">
+      <table className="w-full table-auto text-white">
         <TableHead />
         <tbody>
           {saleItems.map((s, i) => (
@@ -106,7 +117,7 @@ export const SalesTransaction = ({
 const TableHead = () => {
   return (
     <thead>
-      <tr className="text-sm font-normal text-stone-500">
+      <tr className="text-sm font-normal text-slate-300">
         <th className="text-start p-1.5">Item</th>
         <th className="text-start p-1.5">Barcode</th>
         <th className="text-start p-1.5">Quantity</th>
@@ -126,7 +137,13 @@ const TableRow = ({
   total,
 }: Props) => {
   return (
-    <tr className={total > 100 ? "bg-stone-100 text-sm" : "text-sm"}>
+    <tr
+      className={
+        total > 100
+          ? "bg-slate-900/30 text-sm text-white"
+          : "text-sm text-white"
+      }
+    >
       <td className="p-1.5"> {sale_item}</td>
       <td className="p-1.5">{barcode}</td>
       <td className="p-1.5">{quantity}</td>

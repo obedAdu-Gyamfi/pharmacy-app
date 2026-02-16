@@ -59,6 +59,21 @@ export const SalesStartCard = () => {
               saleItems={saleItems}
               setSaleItems={setSaleItems}
             />
+
+            <AddCustomer
+              first_name={first_name}
+              setFirstName={setFirstName}
+              last_name={last_name}
+              setLastName={setLastName}
+              phone={phone}
+              setPhone={setPhone}
+              email={email}
+              setEmail={setEmail}
+              date_of_birth={date_of_birth}
+              setDateOfBirth={setDateOfBirth}
+              address={address}
+              setAddress={setAddress}
+            />
           </div>
 
           <div className="space-y-4">
@@ -79,20 +94,6 @@ export const SalesStartCard = () => {
               setDiscount={setDiscount}
               saleItems={saleItems}
               setSaleItems={setSaleItems}
-            />
-            <AddCustomer
-              first_name={first_name}
-              setFirstName={setFirstName}
-              last_name={last_name}
-              setLastName={setLastName}
-              phone={phone}
-              setPhone={setPhone}
-              email={email}
-              setEmail={setEmail}
-              date_of_birth={date_of_birth}
-              setDateOfBirth={setDateOfBirth}
-              address={address}
-              setAddress={setAddress}
             />
           </div>
         </div>
@@ -141,7 +142,11 @@ const Sales = ({
       setPaymentStatus("");
       setNotes("");
 
-      if (res.data.status === "success") {
+      if (res.data?.message) {
+        const newSaleId = res.data.message;
+        setSaleId(newSaleId);
+        alert("New Sale Created Successfully");
+      } else if (res.data?.status === "success") {
         const newSaleId = res.data.message;
         setSaleId(newSaleId);
         alert("New Sale Created Successfully");
@@ -154,7 +159,7 @@ const Sales = ({
     <div className="rounded border border-stone-300 p-4">
       <form className="grid grid-cols-4 gap-4" onSubmit={handleSubmit}>
         <div>
-          <label className="block mb-1 text-gray-600" htmlFor="customer_id">
+          <label className="block mb-1 text-white" htmlFor="customer_id">
             Customer Id
           </label>
           <input
@@ -169,7 +174,7 @@ const Sales = ({
         </div>
 
         <div>
-          <label className="block mb-1 text-gray-600" htmlFor="payment_method">
+          <label className="block mb-1 text-white" htmlFor="payment_method">
             Payment Method
           </label>
           <select
@@ -186,7 +191,7 @@ const Sales = ({
         </div>
 
         <div>
-          <label className="block mb-1 text-gray-600" htmlFor="payment_status">
+          <label className="block mb-1 text-white" htmlFor="payment_status">
             Payment Status
           </label>
           <select
@@ -204,7 +209,7 @@ const Sales = ({
         </div>
 
         <div>
-          <label className="block mb-1 text-gray-600" htmlFor="notes">
+          <label className="block mb-1 text-white" htmlFor="notes">
             Notes
           </label>
           <input
@@ -305,7 +310,7 @@ const SalesItem: React.FC<IProps> = ({
 
     setSaleItems([...saleItems, newItem]);
 
-    setSaleID("");
+    //setSaleID("");
     setProductName("");
     setBarcode("");
     setQuantity("");
@@ -318,7 +323,7 @@ const SalesItem: React.FC<IProps> = ({
       <div className="rounded border border-stone-300 p-4">
         <form className="gap-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="barcode">
+            <label className="block mb-1 text-white" htmlFor="barcode">
               Barcode
             </label>
             <input
@@ -333,7 +338,7 @@ const SalesItem: React.FC<IProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="sale_id">
+            <label className="block mb-1 text-white" htmlFor="sale_id">
               Sale ID
             </label>
             <input
@@ -347,7 +352,7 @@ const SalesItem: React.FC<IProps> = ({
             />
           </div>
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="product_name">
+            <label className="block mb-1 text-white" htmlFor="product_name">
               Product Name
             </label>
             <input
@@ -362,7 +367,7 @@ const SalesItem: React.FC<IProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="batch_id">
+            <label className="block mb-1 text-white" htmlFor="batch_id">
               Batch ID
             </label>
             <input
@@ -377,7 +382,7 @@ const SalesItem: React.FC<IProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="quantity">
+            <label className="block mb-1 text-white" htmlFor="quantity">
               Quantity
             </label>
             <input
@@ -391,7 +396,7 @@ const SalesItem: React.FC<IProps> = ({
             />
           </div>
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="unit_price">
+            <label className="block mb-1 text-white" htmlFor="unit_price">
               Unit Price
             </label>
             <input
@@ -406,7 +411,7 @@ const SalesItem: React.FC<IProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="discount">
+            <label className="block mb-1 text-white" htmlFor="discount">
               Discount
             </label>
             <input
@@ -486,7 +491,7 @@ const AddCustomer = ({
       <div className="rounded border border-stone-300 p-4">
         <form className="gap-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="firstname">
+            <label className="block mb-1 text-white" htmlFor="firstname">
               First Name
             </label>
             <input
@@ -501,7 +506,7 @@ const AddCustomer = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="lastname">
+            <label className="block mb-1 text-white" htmlFor="lastname">
               Last Name
             </label>
             <input
@@ -516,7 +521,7 @@ const AddCustomer = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="phone">
+            <label className="block mb-1 text-white" htmlFor="phone">
               Phone
             </label>
             <input
@@ -531,7 +536,7 @@ const AddCustomer = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="email">
+            <label className="block mb-1 text-white" htmlFor="email">
               Email
             </label>
             <input
@@ -545,7 +550,7 @@ const AddCustomer = ({
             />
           </div>
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="date_of_birth">
+            <label className="block mb-1 text-white" htmlFor="date_of_birth">
               Date Of Birth
             </label>
             <input
@@ -560,7 +565,7 @@ const AddCustomer = ({
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-600" htmlFor="address">
+            <label className="block mb-1 text-white" htmlFor="address">
               Address
             </label>
             <input

@@ -5,6 +5,7 @@ import { FcCustomerSupport, FcSalesPerformance } from 'react-icons/fc';
 import { LuLogs } from 'react-icons/lu';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiUserCheck } from 'react-icons/fi';
 
 
 
@@ -62,6 +63,7 @@ const routes = [
     ],
   },
 
+  { title: "Profile", Icon: FiUserCheck, path: "/profile" },
   { title: "View Audit Logs", Icon: LuLogs, path: "/audit-logs" },
 ];
 
@@ -146,7 +148,7 @@ const RouteItem = ({
         <div className="ml-8 mt-1 space-y-1">
           {route.children.map((child: any) => (
             <button
-              key={child.title}
+              key={`${child.title}-${child.path ?? "nop"}`}
               onClick={() => {
                 setSelected(child.title);
                 if (child.path) navigate(child.path); // <-- navigate here
@@ -166,4 +168,3 @@ const RouteItem = ({
     </div>
   );
 };
-
