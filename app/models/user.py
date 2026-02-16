@@ -162,14 +162,39 @@ class DeleteUser:
     
 class Profile:
     
-    def __init__(self):
-        pass
+    def __init__(self, db, current_user):
+        self.db = db
+        self.current_user = current_user
     
     def view_profile(self):
         pass
     
-    def edit_profile(self):
-        pass
+    def edit_profile(self, user_id, fullname=None, email=None, phone=None):
+        user = self.db.query(User).filter(User.id == user_id).first()
+        if not user:
+            logger.error("Profile: user not found")
+            raise HTTPException(status_code=404, detail="User not found")
+
+        if fullname is not None and fullname != "":
+            user.fullname = fullname
+        if email is not None and email != "":
+            user.email = email
+        if phone is not None and phone != "":
+            user.phone = phone
+
+        self.db.commit()
+        self.db.refresh(user)
+        return {
+            "status": "success",
+            "data": {
+                "id": user.id,
+                "username": user.username,
+                "fullname": user.fullname,
+                "email": user.email,
+                "phone": user.phone,
+                "role": user.role,
+            },
+        }
 
 
 class PasswordResetToken(BASE):

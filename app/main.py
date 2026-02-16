@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form,HTTPException, Depends, Request, APIRouter
 from fastapi.responses import Response
 from models.database import DB
-from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch, PasswordRecovery
+from models.user import SearchUser, CreateUser, User, DeleteUser, UserSearch, PasswordRecovery, Profile
 from models.suppliers import CreateSupplier, SearchSupplier, GetSupplier
 from models.products import CreateProduct, SearchProduct, CreateStochBatch, GenericProductSearch
 from models.sales import CreateSaleItem, CreateSale, GetSales, RecentTransaction, PurchaseOrder, CreatePO, GetPurchaseOrders
@@ -365,8 +365,33 @@ async def search_user(
           
 
 @app.put("/update-user/{user_id}")
-async def update_user_info(user_id, db: Session = Depends(db_instance.get_db)):
-     pass
+async def update_user_info(
+     user_id: int,
+     fullname: Optional[str] = Form(None),
+     email: Optional[str] = Form(None),
+     phone: Optional[str] = Form(None),
+     current_user: User = Depends(get_current_user),
+     db: Session = Depends(db_instance.get_db)
+):
+     try:
+          if current_user.role not in ("admin", "manager") and current_user.id != user_id:
+               raise HTTPException(status_code=403, detail="Insufficient Permission")
+          result = Profile(db, current_user).edit_profile(
+               user_id=user_id,
+               fullname=fullname,
+               email=email,
+               phone=phone
+          )
+          return JSONResponse(status_code=200, content=result)
+     except HTTPException as e:
+          raise e
+     except RuntimeError as e:
+          logger.error(f"update_user_info: {e}")
+          raise HTTPException(status_code=500, detail=str(e))
+     except Exception as e:
+          logger.debug(f"update_user_info_DB Error: {e}")
+          db.rollback()
+          raise HTTPException(status_code=500, detail="Failed to update user profile")
      
      
 @app.post("/add-supplier/")
