@@ -1,8 +1,6 @@
-Place your TLS certificates here for production.
+This folder is not used in the current HTTP-only setup.
 
-Expected filenames:
+If you later enable HTTPS with manually managed certs, update the Nginx
+config to point here and place your files with these names:
 - fullchain.pem
 - privkey.pem
-
-If you use Let's Encrypt, you can copy the files from
-/etc/letsencrypt/live/<your-domain>/ into this folder.

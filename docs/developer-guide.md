@@ -55,7 +55,7 @@ Core variables:
 
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - `SECRET_KEY` for JWT signing
- - `CADDY_DOMAIN`, `CADDY_EMAIL` for HTTPS (production)
+ - `NGINX_SERVER_NAME` for Nginx (HTTP)
 
 Password reset email:
 
@@ -67,6 +67,11 @@ Password reset email:
 - `SMTP_USE_SSL` (set `true` for port 465)
 - `SMTP_STARTTLS` (default `true`)
 - `FRONTEND_BASE_URL` (e.g. `http://localhost:5173`)
+
+## HTTP Only
+
+The current production compose serves the app over HTTP only.
+When you're ready for HTTPS, re-enable Certbot and TLS in the compose file.
 
 ## Auth and Roles
 

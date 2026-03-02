@@ -51,7 +51,11 @@ npm run dev
 - Auth: `SECRET_KEY`
 - Email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`, `SMTP_USE_SSL`, `SMTP_STARTTLS`
 - Reset links: `FRONTEND_BASE_URL`
-- HTTPS: `CADDY_DOMAIN`, `CADDY_EMAIL`
+- Nginx: `NGINX_SERVER_NAME`
+
+### HTTP Only
+
+The production compose currently serves the app over HTTP only.
 
 ### Password Reset API
 
