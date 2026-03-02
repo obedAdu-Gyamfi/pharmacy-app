@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../Login/axiosClient";
 import { FiUser } from "react-icons/fi";
 import {
   LineChart,
@@ -17,7 +17,7 @@ export const ActivityGraph = () => {
   useEffect(() => {
     const fetchActivity = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/recent-activity");
+        const res = await api.get("/recent-activity");
         setActivityData(res.data);
       } catch (err) {
         console.error("Failed to fetch activity data:", err);

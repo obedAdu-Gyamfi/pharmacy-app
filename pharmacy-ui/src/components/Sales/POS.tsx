@@ -25,7 +25,7 @@ export const POS = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#00008B] px-6 pb-8 pt-6 text-slate-100">
+      <div className="min-h-screen bg-[#00BFFF] px-6 pb-8 pt-6 text-slate-100">
         <div className="mx-auto w-full max-w-6xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">

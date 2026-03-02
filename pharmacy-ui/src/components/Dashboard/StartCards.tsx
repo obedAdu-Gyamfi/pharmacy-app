@@ -1,6 +1,6 @@
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../Login/axiosClient";
 
 interface Props {
   title: string;
@@ -21,9 +21,7 @@ export const StartCards = ({selectedPeriod}: StarCardsProps) => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const res = await axios.get(
-          `http://127.0.0.1:8000/get-sale-period/${selectedPeriod}`
-         );
+        const res = await api.get(`/get-sale-period/${selectedPeriod}`);
         setSalesData(res.data);
         console.log(salesData)
        } catch (err) {

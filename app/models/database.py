@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker
 from urllib.parse import quote_plus
 from pathlib import Path
@@ -52,16 +52,32 @@ class DB:
 
         self.SessionLocal = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
         session = self.SessionLocal()
+        db_initialized = False
         try:
             session.execute(text("SELECT 1 FROM system_settings LIMIT 1"))
-            result = session.execute(text("SELECT setting_value FROM system_settings WHERE setting_key='db_initialized'")).fetchone()
+            result = session.execute(
+                text("SELECT setting_value FROM system_settings WHERE setting_key='db_initialized'")
+            ).fetchone()
             if result and result[0] == "true":
-                logger.info(f"Database already initialized. Skipping creation.")
-                #print("Database already initialized. Skipping table creation.")
-                self.activate = False
-                return
+                db_initialized = True
         except Exception as e:
             logger.error(f"Database Initaliazation Error: {e}")
+
+        if db_initialized:
+            try:
+                inspector = inspect(self.engine)
+                if not inspector.has_table("password_reset_tokens"):
+                    PasswordResetToken.__table__.create(self.engine)
+                    logger.info("Password reset token table created.")
+                else:
+                    logger.info("Password reset token table already exists.")
+            except Exception as e:
+                logger.error(f"Password reset token table creation failed: {e}")
+            finally:
+                session.close()
+            logger.info("Database already initialized. Skipping creation.")
+            self.activate = False
+            return
         
         BASE.metadata.create_all(self.engine)
         session.execute(text("INSERT INTO system_settings (setting_key, setting_value) Values('db_initialized', 'true')"))
@@ -92,4 +108,3 @@ class DB:
             db.close()
    
     
-
