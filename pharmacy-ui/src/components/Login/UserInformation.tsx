@@ -1,12 +1,13 @@
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import api from "./axiosClient";
 
 interface UserData {
   id: number;
   username: string;
   fullname: string;
   email?: string;
+  phone?: string;
 }
 
 export const UserInformation = () => {
@@ -24,12 +25,7 @@ export const UserInformation = () => {
     const fetchUser = async () => {
       if (!username || !token) return;
       try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/get-user/${username}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await api.get(`/get-user/${username}`);
         setUserData(response.data.data);
       } catch (err) {
         console.error("Failed to fetch user:", err);

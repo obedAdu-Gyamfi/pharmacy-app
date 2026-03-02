@@ -55,6 +55,7 @@ Core variables:
 
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - `SECRET_KEY` for JWT signing
+ - `CADDY_DOMAIN`, `CADDY_EMAIL` for HTTPS (production)
 
 Password reset email:
 
@@ -63,6 +64,8 @@ Password reset email:
 - `SMTP_USER`
 - `SMTP_PASSWORD`
 - `SMTP_SENDER`
+- `SMTP_USE_SSL` (set `true` for port 465)
+- `SMTP_STARTTLS` (default `true`)
 - `FRONTEND_BASE_URL` (e.g. `http://localhost:5173`)
 
 ## Auth and Roles
@@ -76,7 +79,7 @@ Password reset email:
 2. Server creates a reset token, stores hash, emails link.
 3. `POST /password-reset/confirm` with `token` and `new_password`.
 
-Note: Reset token table is created only during DB initialization. If DB is already initialized, create the table manually or run a migration.
+Note: On startup, the app will create the `password_reset_tokens` table if it is missing.
 
 ## API Docs
 

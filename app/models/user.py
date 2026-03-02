@@ -231,6 +231,8 @@ class PasswordRecovery:
         smtp_user = os.getenv("SMTP_USER")
         smtp_password = os.getenv("SMTP_PASSWORD")
         smtp_sender = os.getenv("SMTP_SENDER", smtp_user)
+        smtp_use_ssl = os.getenv("SMTP_USE_SSL", "false").lower() in {"1", "true", "yes", "on"}
+        smtp_starttls = os.getenv("SMTP_STARTTLS", "true").lower() in {"1", "true", "yes", "on"}
 
         if not smtp_host or not smtp_user or not smtp_password or not smtp_sender:
             logger.error("PasswordRecovery: SMTP settings are not configured")
@@ -246,10 +248,16 @@ class PasswordRecovery:
             "If you did not request this, you can safely ignore this email.\n"
         )
 
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.send_message(msg)
+        if smtp_use_ssl:
+            with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port) as server:
+                if smtp_starttls:
+                    server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
 
     def request_password_reset(self, email: str):
         user = self.db.query(User).filter(User.email == email).first()

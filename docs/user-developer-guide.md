@@ -49,8 +49,9 @@ npm run dev
 
 - DB: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - Auth: `SECRET_KEY`
-- Email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`
+- Email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`, `SMTP_USE_SSL`, `SMTP_STARTTLS`
 - Reset links: `FRONTEND_BASE_URL`
+- HTTPS: `CADDY_DOMAIN`, `CADDY_EMAIL`
 
 ### Password Reset API
 
@@ -59,5 +60,5 @@ npm run dev
 
 ### Notes
 
-- If DB is already initialized, create the password reset token table manually or via migration.
+- On startup, the app will create the `password_reset_tokens` table if it is missing.
 - UI uses JWT `role` claim for route gating; users should re-login after updates.

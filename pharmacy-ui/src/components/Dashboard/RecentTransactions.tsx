@@ -1,6 +1,6 @@
 import { FiArrowUpRight, FiDollarSign, FiMoreHorizontal } from 'react-icons/fi'
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../Login/axiosClient";
 
 
 interface Props{
@@ -18,7 +18,7 @@ export const RecentTransactions = () => {
   useEffect(() => {
      const fetchSales = async () => {
        try {
-         const res = await axios.get("http://127.0.0.1:8000/recent-sales");
+         const res = await api.get("/recent-sales");
          setSales(res.data);
        } catch (err) {
          console.error("Failed to fetch recent sales:", err);
