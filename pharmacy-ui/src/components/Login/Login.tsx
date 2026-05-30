@@ -15,6 +15,9 @@ const Login = () => {
     e.preventDefault();
     try {
       const result = await login(username, password);
+      if (!result || !result.access_token) {
+        throw new Error("No access token received");
+      }
       localStorage.setItem("token", result.access_token);
       const decoded: any = jwtDecode(result.access_token);
       const role = decoded?.role;

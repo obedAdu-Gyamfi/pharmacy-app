@@ -35,15 +35,28 @@ class DB:
             print(f"Environment Set!")
         dbname = os.getenv("DB_NAME")
         host = os.getenv("DB_HOST")
-        port = int(os.getenv("DB_PORT"))
+        port = os.getenv("DB_PORT")
 
         password = quote_plus(password)
 
         DATABASE_URL_NO_DB  = f"mysql+pymysql://{user}:{password}@{host}:{port}/"
 
+        # Retry connection to handle MySQL still starting up
+        import time
+        max_retries = 30
+        retry_delay = 2
         engine_tmp = create_engine(DATABASE_URL_NO_DB, pool_pre_ping=True, echo=True)
-        with engine_tmp.connect() as conn:
-            conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {dbname}"))
+        for attempt in range(1, max_retries + 1):
+            try:
+                with engine_tmp.connect() as conn:
+                    conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {dbname}"))
+                break
+            except Exception as e:
+                if attempt == max_retries:
+                    logger.error(f"Failed to connect to database after {max_retries} attempts: {e}")
+                    raise
+                logger.info(f"Database connection attempt {attempt}/{max_retries} failed, retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
         engine_tmp.dispose()
 
         DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}"
@@ -97,8 +110,7 @@ class DB:
             session.add(admin_user)
             session.commit()
         session.close()
-        #print("Database initialized Successfully")
-        logger.info("Databse initialized Succussfully")
+        logger.info("Database initialized Successfully")
 
     def get_db(self):
         db = self.SessionLocal()
